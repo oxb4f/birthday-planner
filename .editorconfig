@@ -1,0 +1,28 @@
+ 
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# Matches multiple files with brace expansion notation
+[*.{js,ts}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace=true
+
+[*.ts]
+ij_typescript_space_after_comma = true
+ij_typescript_spaces_within_imports = true
+ij_typescript_use_semicolon_after_statement = true
+ij_typescript_use_double_quotes = true
+ij_typescript_force_quote_style = true
+
+# Matches the exact files either package.json or .travis.yml
+[{package.json,*.yml}]
+indent_style = space
+indent_size = 2
