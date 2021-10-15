@@ -1,0 +1,100 @@
+version: "3.4"
+
+services:
+  redis:
+    build:
+      context: ../../.
+      dockerfile: ./docker/dev/redis/Dockerfile
+      network: host
+    command: >
+      --requirepass "${REDIS_PASSWORD}"
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - ../../mounted_volumes/redis:/data:rw,delegated
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 60s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  api:
+    build:
+      context: ../../.
+      dockerfile: ./docker/dev/app/Dockerfile
+      network: host
+    command: [
+        "npm", "run", "start:debug"
+    ]
+    restart: always
+    volumes:
+      - ../../.:/opt/api/:rw,cached
+      - ../../src/migrations:/opt/api/src/migrations:rw,delegated
+      - ../../dist:/opt/api/dist:rw,delegated
+      - ../../temp:/opt/api/temp:rw,delegated
+    networks:
+      - internal
+      - public
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - NODE_PORT=${NODE_PORT}
+      - POSTGREG_DB_NAME=${POSTGREG_DB_NAME}
+      - POSTGRES_DB_USER=${POSTGRES_DB_USER}
+      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - APP_PUBLIC_URL=${APP_PUBLIC_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - 3000:${NODE_PORT}
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  postgres:
+    image: postgres:14.0-alpine
+    volumes:
+      - ../../mounted_volumes/postgres/:/var/lib/postgresql/data/:rw,delegated
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGREG_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
+    networks:
+      - internal
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "pg_isready -U ${POSTGRES_DB_USER} -d ${POSTGRES_DB_PASSWORD}"
+      interval: 60s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+
+networks:
+  internal:
+    driver: bridge
+
+  public:
+    driver: bridge

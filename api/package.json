@@ -21,10 +21,19 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@mikro-orm/nestjs": "^4.3.0",
+    "@mikro-orm/postgresql": "^4.5.9",
+    "@mikro-orm/sql-highlighter": "^1.0.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/serve-static": "^2.2.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/find-config": "^1.0.1",
+    "dotenv": "^10.0.0",
+    "find-config": "^1.0.0",
+    "mikro-orm": "^4.5.9",
+    "mikro-orm-cache-adapter-redis": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
@@ -67,5 +76,21 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "ignore": [
+      "src/**/*.spec.ts"
+    ]
   }
 }
