@@ -17,6 +17,10 @@ export class UserService {
     return user;
   }
 
+  public async checkFieldForUniqueness(field: keyof User, value: unknown, em: EntityManager): Promise<boolean> {
+    return (await em.count(User, { [field]: value })) === 0;
+  }
+
   public async getUserByUserId(userId: number, em: EntityManager): Promise<User | null> {
     return em.findOne(User, { id: userId });
   }

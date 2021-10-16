@@ -7,7 +7,7 @@ import { CreateUserDto } from "../../user/dto";
 import { User } from "../../user/entities";
 import { IJwtPayload, IJwtTokens } from "../interfaces";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
-import { SignInDto } from "../dto";
+import { CredentialsDto, SignInDto } from "../dto";
 
 @Injectable()
 export class AuthService {
@@ -29,6 +29,39 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  public checkPassword(password: string): boolean {
+    return (
+      /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(password) &&
+      password.length >= 8 &&
+      password.length <= 32
+    );
+  }
+
+  public async checkUsername(username: string, em: EntityManager): Promise<boolean> {
+    return (
+      (await this._userService.checkFieldForUniqueness("username", username, em)) &&
+      username.length >= 5 &&
+      username.length <= 25
+    );
+  }
+
+  public async checkCredentials(credentialsDto: CredentialsDto, em: EntityManager): Promise<boolean> {
+    for (const key of Object.keys(credentialsDto)) {
+      let validationResult = false;
+      if (key === "password") {
+        validationResult = this.checkPassword(credentialsDto[key]);
+      } else if (key === "username") {
+        validationResult = await this.checkUsername(credentialsDto[key], em);
+      }
+
+      if (!validationResult) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   public generateJwtAccessToken(payload: IJwtPayload): string {

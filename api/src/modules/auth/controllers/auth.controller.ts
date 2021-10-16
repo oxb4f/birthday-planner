@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, HttpStatus, Post, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, ValidationPipe } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../../user/dto";
@@ -6,7 +6,7 @@ import { AuthService } from "../services";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
 import { IJwtTokens } from "../interfaces";
 import { UserService } from "../../user/services";
-import { SignInDto } from "../dto";
+import { CredentialsDto, SignInDto } from "../dto";
 import { User } from "../../user/entities";
 
 @Controller("auth")
@@ -46,5 +46,10 @@ export class AuthController {
       user: this._userService.buildUserRo(user),
       tokens,
     };
+  }
+
+  @Get("/check-credentials")
+  public async checkCredentials(@Query() credentialsDto: CredentialsDto): Promise<{ result: boolean }> {
+    return { result: await this._authService.checkCredentials(credentialsDto, this._em) };
   }
 }
