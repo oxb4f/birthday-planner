@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, HttpException, HttpStatus, Post, ValidationPipe } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../../user/dto";
@@ -6,6 +6,8 @@ import { AuthService } from "../services";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
 import { IJwtTokens } from "../interfaces";
 import { UserService } from "../../user/services";
+import { SignInDto } from "../dto";
+import { User } from "../../user/entities";
 
 @Controller("auth")
 export class AuthController {
@@ -17,7 +19,24 @@ export class AuthController {
 
   @Post("/sign-up")
   public async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<IAuthRo> {
-    const user = await this._authService.signUp(createUserDto, this._em);
+    const user = await this._em.transactional((em) => this._authService.signUp(createUserDto, em));
+
+    const tokens: IJwtTokens = {
+      accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
+    };
+
+    return {
+      user: this._userService.buildUserRo(user),
+      tokens,
+    };
+  }
+
+  @Post("/sign-in")
+  public async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IAuthRo> {
+    const user: User | null = await this._authService.signIn(signInDto, this._em);
+    if (user === null) {
+      throw new HttpException({ errors: { message: "Cannot sign in: invalid credentials" } }, HttpStatus.BAD_REQUEST);
+    }
 
     const tokens: IJwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),

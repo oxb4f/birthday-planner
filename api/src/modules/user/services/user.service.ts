@@ -17,12 +17,12 @@ export class UserService {
     return user;
   }
 
-  public async getUserByUserId(userId: number, em: EntityManager): Promise<User> {
-    return em.findOneOrFail(User, { id: userId });
+  public async getUserByUserId(userId: number, em: EntityManager): Promise<User | null> {
+    return em.findOne(User, { id: userId });
   }
 
-  public async getUserByUsername(username: string, em: EntityManager): Promise<User> {
-    return em.findOneOrFail(User, { username });
+  public async getUserByUsername(username: string, em: EntityManager): Promise<User | null> {
+    return em.findOne(User, { username });
   }
 
   public buildUserRo(user: User): IUserRo {

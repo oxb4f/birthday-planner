@@ -13,10 +13,10 @@ export class User {
   public readonly password: string;
 
   @Property({ nullable: true })
-  public readonly firstName?: string;
+  public readonly firstName?: string | null = null;
 
   @Property({ nullable: true })
-  public readonly lastName?: string;
+  public readonly lastName?: string | null = null;
 
   @Property()
   public readonly createdAt: number = Math.floor(Date.now() / 1000);
@@ -28,8 +28,12 @@ export class User {
     this.username = username;
     this.password = User.passwordHash(password);
 
-    this.firstName = firstName;
-    this.lastName = lastName;
+    if (firstName !== undefined) {
+      this.firstName = firstName;
+    }
+    if (lastName !== undefined) {
+      this.lastName = lastName;
+    }
   }
 
   public static passwordHash(password: string): string {
