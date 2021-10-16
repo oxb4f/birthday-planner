@@ -26,7 +26,8 @@ services:
         max-file: "10"
         max-size: "100m"
 
-  api:
+  app:
+    container_name: app
     build:
       context: ../../.
       dockerfile: ./docker/dev/app/Dockerfile
