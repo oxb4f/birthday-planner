@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../dto";
@@ -7,7 +8,12 @@ import { IUserRo } from "../interfaces";
 
 @Injectable()
 export class UserService {
-  constructor(protected readonly _em: EntityManager) {}
+  constructor(
+    protected readonly _em: EntityManager,
+
+    @InjectPinoLogger(UserService.name)
+    protected readonly _logger: PinoLogger,
+  ) {}
 
   public async createUser(createUserDto: CreateUserDto, em: EntityManager): Promise<User> {
     const user = new User(createUserDto.username, createUserDto.password);

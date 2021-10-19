@@ -34,15 +34,19 @@
     "@types/find-config": "^1.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "compression": "^1.7.4",
     "dotenv": "^10.0.0",
     "find-config": "^1.0.0",
+    "helmet": "^4.6.0",
     "mikro-orm": "^4.5.9",
     "mikro-orm-cache-adapter-redis": "^1.1.1",
+    "nestjs-pino": "^2.2.0",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
+    "pino-pretty": "^7.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

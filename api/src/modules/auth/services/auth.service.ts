@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { JwtService } from "@nestjs/jwt";
 
@@ -15,6 +16,9 @@ export class AuthService {
     protected readonly _em: EntityManager,
     protected readonly _jwtService: JwtService,
     protected readonly _userService: UserService,
+
+    @InjectPinoLogger(AuthService.name)
+    protected readonly _logger: PinoLogger,
   ) {}
 
   public async signUp(createUserDto: CreateUserDto, em: EntityManager): Promise<User> {
