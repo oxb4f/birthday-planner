@@ -12,6 +12,9 @@ export class User {
   @Property()
   public readonly password: string;
 
+  @Property()
+  public readonly birthdayDate: string;
+
   @Property({ nullable: true })
   public readonly firstName?: string | null = null;
 
@@ -24,9 +27,10 @@ export class User {
   @Property({ onUpdate: () => Math.floor(Date.now() / 1000) })
   public readonly updatedAt: number = Math.floor(Date.now() / 1000);
 
-  constructor(username: string, password: string, firstName?: string, lastName?: string) {
+  constructor(username: string, password: string, birthdayDate: string, firstName?: string, lastName?: string) {
     this.username = username;
     this.password = User.passwordHash(password);
+    this.birthdayDate = birthdayDate;
 
     if (firstName !== undefined) {
       this.firstName = firstName;

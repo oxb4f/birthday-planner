@@ -1,6 +1,8 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, ValidationPipe } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
+import { ValidationPipe } from "../../shared/pipes";
 import { CreateUserDto } from "../../user/dto";
 import { AuthService } from "../services";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
@@ -9,6 +11,7 @@ import { UserService } from "../../user/services";
 import { CredentialsDto, SignInDto } from "../dto";
 import { User } from "../../user/entities";
 
+@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -25,10 +28,7 @@ export class AuthController {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
     };
 
-    return {
-      user: this._userService.buildUserRo(user),
-      tokens,
-    };
+    return this._authService.buildAuthRo(tokens, user);
   }
 
   @Post("/sign-in")
@@ -42,10 +42,7 @@ export class AuthController {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
     };
 
-    return {
-      user: this._userService.buildUserRo(user),
-      tokens,
-    };
+    return this._authService.buildAuthRo(tokens, user);
   }
 
   @Get("/check-credentials")

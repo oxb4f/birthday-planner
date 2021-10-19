@@ -17,6 +17,10 @@ export class ConfigService {
     return this._nodeEnv;
   }
 
+  public isDevelopment(): boolean {
+    return this._nodeEnv === "dev";
+  }
+
   public get(key: string): string {
     return this._envConfig[key];
   }

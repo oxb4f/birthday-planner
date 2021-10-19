@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { JwtService } from "@nestjs/jwt";
 
@@ -8,6 +9,7 @@ import { User } from "../../user/entities";
 import { IJwtPayload, IJwtTokens } from "../interfaces";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
 import { CredentialsDto, SignInDto } from "../dto";
+import { IUserRo } from "../../user/interfaces";
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,9 @@ export class AuthService {
     protected readonly _em: EntityManager,
     protected readonly _jwtService: JwtService,
     protected readonly _userService: UserService,
+
+    @InjectPinoLogger(AuthService.name)
+    protected readonly _logger: PinoLogger,
   ) {}
 
   public async signUp(createUserDto: CreateUserDto, em: EntityManager): Promise<User> {
@@ -33,17 +38,17 @@ export class AuthService {
 
   public checkPassword(password: string): boolean {
     return (
-      /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(password) &&
       password.length >= 8 &&
-      password.length <= 32
+      password.length <= 32 &&
+      /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(password)
     );
   }
 
   public async checkUsername(username: string, em: EntityManager): Promise<boolean> {
     return (
-      (await this._userService.checkFieldForUniqueness("username", username, em)) &&
       username.length >= 5 &&
-      username.length <= 25
+      username.length <= 25 &&
+      (await this._userService.checkFieldForUniqueness("username", username, em))
     );
   }
 
@@ -68,10 +73,10 @@ export class AuthService {
     return this._jwtService.sign(payload);
   }
 
-  public buildAuthRo(jwtTokens: IJwtTokens, user: User): IAuthRo {
+  public async buildAuthRo(jwtTokens: IJwtTokens, user: User): Promise<IAuthRo> {
     return {
       tokens: jwtTokens,
-      user: this._userService.buildUserRo(user),
+      user: await this._userService.buildUserRo(user),
     };
   }
 }
