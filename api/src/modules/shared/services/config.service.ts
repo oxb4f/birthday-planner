@@ -21,6 +21,14 @@ export class ConfigService {
     return this._nodeEnv === "dev";
   }
 
+  public isProduction(): boolean {
+    return this._nodeEnv === "production";
+  }
+
+  public isStaging(): boolean {
+    return this._nodeEnv === "staging";
+  }
+
   public get(key: string): string {
     return this._envConfig[key];
   }

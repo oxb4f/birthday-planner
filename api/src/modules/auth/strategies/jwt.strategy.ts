@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this._userService.getUserByUserId(payload.userId, this._em);
 
     if (!user) {
-      throw new HttpException("User not found.", HttpStatus.UNAUTHORIZED);
+      throw new HttpException("User not found", HttpStatus.UNAUTHORIZED);
     }
 
     return user;

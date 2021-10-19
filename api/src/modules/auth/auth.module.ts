@@ -30,6 +30,6 @@ import { SharedModule } from "../shared/shared.module";
   ],
   providers: [...Object.values(authServices), ...Object.values(authStrategies)],
   controllers: Object.values(authControllers),
-  exports: [...Object.values(authServices), ...Object.values(authStrategies)],
+  exports: [...Object.values(authServices), ...Object.values(authStrategies), PassportModule],
 })
 export class AuthModule {}

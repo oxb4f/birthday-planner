@@ -9,7 +9,6 @@ import { User } from "../../user/entities";
 import { IJwtPayload, IJwtTokens } from "../interfaces";
 import { IAuthRo } from "../interfaces/auth-ro.interface";
 import { CredentialsDto, SignInDto } from "../dto";
-import { IUserRo } from "../../user/interfaces";
 
 @Injectable()
 export class AuthService {
@@ -55,6 +54,7 @@ export class AuthService {
   public async checkCredentials(credentialsDto: CredentialsDto, em: EntityManager): Promise<boolean> {
     for (const key of Object.keys(credentialsDto)) {
       let validationResult = false;
+
       if (key === "password") {
         validationResult = this.checkPassword(credentialsDto[key]);
       } else if (key === "username") {

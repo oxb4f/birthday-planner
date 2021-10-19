@@ -35,7 +35,7 @@ export class AuthController {
   public async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IAuthRo> {
     const user: User | null = await this._authService.signIn(signInDto, this._em);
     if (user === null) {
-      throw new HttpException({ errors: { message: "Cannot sign in: invalid credentials" } }, HttpStatus.BAD_REQUEST);
+      throw new HttpException("Cannot sign in: invalid credentials", HttpStatus.BAD_REQUEST);
     }
 
     const tokens: IJwtTokens = {
