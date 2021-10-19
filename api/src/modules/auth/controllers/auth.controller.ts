@@ -26,10 +26,7 @@ export class AuthController {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
     };
 
-    return {
-      user: this._userService.buildUserRo(user),
-      tokens,
-    };
+    return this._authService.buildAuthRo(tokens, user);
   }
 
   @Post("/sign-in")
@@ -43,10 +40,7 @@ export class AuthController {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
     };
 
-    return {
-      user: this._userService.buildUserRo(user),
-      tokens,
-    };
+    return this._authService.buildAuthRo(tokens, user);
   }
 
   @Get("/check-credentials")

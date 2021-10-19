@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
+import { InjectPinoLogger, Params, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../dto";
 import { User } from "../entities";
 import { IUserRo } from "../interfaces";
+import { wrap } from "mikro-orm";
+import { excludeKeys } from "../../shared/helpers";
 
 @Injectable()
 export class UserService {
@@ -35,7 +37,20 @@ export class UserService {
     return em.findOne(User, { username });
   }
 
-  public buildUserRo(user: User): IUserRo {
-    return { userId: user.id, username: user.username, firstName: user.firstName, lastName: user.lastName };
+  public async buildUserRo(
+    user: User,
+    populate: Array<string> = [],
+    exclude?: Array<keyof IUserRo>,
+  ): Promise<Partial<IUserRo>> {
+    await wrap(user).init(true, populate);
+
+    const userRo: IUserRo = {
+      userId: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    return exclude?.length > 0 ? excludeKeys<IUserRo>(exclude, userRo) : userRo;
   }
 }
