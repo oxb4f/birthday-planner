@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, UseInterceptors } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { ValidationPipe } from "../../shared/pipes";
@@ -10,6 +11,7 @@ import { UserService } from "../../user/services";
 import { CredentialsDto, SignInDto } from "../dto";
 import { User } from "../../user/entities";
 
+@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(

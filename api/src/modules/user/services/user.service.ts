@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { InjectPinoLogger, Params, PinoLogger } from "nestjs-pino";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../dto";
 import { User } from "../entities";
 import { IUserRo } from "../interfaces";
-import { wrap } from "mikro-orm";
 import { excludeKeys } from "../../shared/helpers";
 
 @Injectable()
@@ -18,7 +17,7 @@ export class UserService {
   ) {}
 
   public async createUser(createUserDto: CreateUserDto, em: EntityManager): Promise<User> {
-    const user = new User(createUserDto.username, createUserDto.password);
+    const user = new User(createUserDto.username, createUserDto.password, createUserDto.birthdayDate);
 
     em.persist(user);
 
@@ -37,12 +36,16 @@ export class UserService {
     return em.findOne(User, { username });
   }
 
+  public checkBirthdayDate(birthdayDate: string): boolean {
+    return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
+  }
+
   public async buildUserRo(
     user: User,
     populate: Array<string> = [],
     exclude?: Array<keyof IUserRo>,
   ): Promise<Partial<IUserRo>> {
-    await wrap(user).init(true, populate);
+    await this._em.populate(user, populate);
 
     const userRo: IUserRo = {
       userId: user.id,

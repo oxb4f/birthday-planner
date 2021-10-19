@@ -8,19 +8,33 @@ import { ConfigService } from "./modules/shared/services";
 import { Logger } from "nestjs-pino";
 import { ExceptionsFilter } from "./modules/shared/filters";
 import { ResponseInterceptor } from "./modules/shared/interceptors";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { INestApplication } from "@nestjs/common";
+
+const globalPrefix = "api";
+
+function setupSwagger(app: INestApplication): void {
+  const config = new DocumentBuilder().setTitle("The Birthday planner API").setVersion("0.1.0").build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup(`${globalPrefix}/doc`, app, document);
+}
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.select(SharedModule).get(ConfigService);
 
-  app.setGlobalPrefix("api");
+  app.setGlobalPrefix(globalPrefix);
   app.useGlobalFilters(new ExceptionsFilter(configService));
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useLogger(app.get(Logger));
   app.use(helmet());
   app.use(compression());
+
+  setupSwagger(app);
 
   await app.listen(configService.getNumber("NODE_PORT"));
 }
