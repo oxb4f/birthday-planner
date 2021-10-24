@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
 
 import { ConfigService } from "../services";
 import * as ErrorStackParser from "error-stack-parser";
@@ -13,12 +13,13 @@ export class ExceptionsFilter implements ExceptionFilter {
 
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const apiResponse: { statusCode: number; error?: unknown, stack?: Array<string> } = { statusCode: status };
+    const apiResponse: { statusCode: number; error?: unknown; stack?: Array<string> } = { statusCode: status };
 
     if (this._configService.isDevelopment()) {
-      apiResponse.error = exception instanceof HttpException ? exception.getResponse() : exception.message;
+      apiResponse.error = exception.message;
       apiResponse.stack = ErrorStackParser.parse(exception).map(
-        (si) => `${si.functionName} (${si.fileName}:${si.lineNumber}:${si.columnNumber})`,
+        (stackFrame) =>
+          `${stackFrame.functionName} (${stackFrame.fileName}:${stackFrame.lineNumber}:${stackFrame.columnNumber})`,
       );
     }
 
