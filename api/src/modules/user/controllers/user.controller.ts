@@ -19,8 +19,8 @@ export class UserController {
   @ApiBearerAuth()
   @Get("/user/:userId")
   @UseGuards(AuthGuard())
-  public async getUserByUserId(@Param("userId", ParseIntPipe) userId: number): Promise<{ user: Partial<IUserRo> }> {
-    const user = await this._userService.getUserByUserId(userId, this._em);
+  public async getUserByUserId(@Param("userId", ParseIntPipe) userId: number): Promise<{ user: IUserRo }> {
+    const user = await this._userService.getUserByUserId(this._em, userId);
     if (user === null) {
       throw new HttpException(`User does not exist: id = ${userId}`, HttpStatus.BAD_REQUEST);
     }
