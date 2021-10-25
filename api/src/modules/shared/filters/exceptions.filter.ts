@@ -13,10 +13,15 @@ export class ExceptionsFilter implements ExceptionFilter {
 
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const apiResponse: { statusCode: number; error?: unknown; stack?: Array<string> } = { statusCode: status };
+    const apiResponse: { statusCode: number; message?: string; error?: unknown; stack?: Array<string> } = {
+      statusCode: status,
+    };
 
     if (this._configService.isDevelopment()) {
-      apiResponse.error = exception.message;
+      apiResponse.message = exception.message;
+      if (exception instanceof HttpException) {
+        apiResponse.error = exception.getResponse();
+      }
       apiResponse.stack = ErrorStackParser.parse(exception).map(
         (stackFrame) =>
           `${stackFrame.functionName} (${stackFrame.fileName}:${stackFrame.lineNumber}:${stackFrame.columnNumber})`,

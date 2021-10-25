@@ -41,7 +41,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Post("/sign-in")
@@ -61,7 +61,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Post("/refresh")
@@ -85,7 +85,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Get("/check-credentials")

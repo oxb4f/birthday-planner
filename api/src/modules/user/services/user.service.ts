@@ -46,8 +46,8 @@ export class UserService {
     return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
   }
 
-  public async buildUserRo(user: User): Promise<IUserRo> {
-    await this._em.populate(user, []);
+  public async buildUserRo(em: EntityManager, user: User): Promise<IUserRo> {
+    await em.populate(user, []);
 
     return {
       userId: user.id,
