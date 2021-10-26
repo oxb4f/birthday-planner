@@ -1,6 +1,22 @@
 version: "3.4"
 
 services:
+  nginx:
+    build:
+      context: ../../.
+      dockerfile: ./docker/dev/nginx/Dockerfile
+      network: host
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+        - internal
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
   redis:
     build:
       context: ../../.
@@ -47,6 +63,7 @@ services:
     depends_on:
       - redis
       - postgres
+      - nginx
     environment:
       - NODE_ENV=${NODE_ENV}
       - NODE_PORT=${NODE_PORT}
