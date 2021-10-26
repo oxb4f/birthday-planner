@@ -114,10 +114,10 @@ export class AuthService {
     return this._jwtService.sign(payload);
   }
 
-  public async buildAuthRo(jwtTokens: IJwtTokens, user: User): Promise<IAuthRo> {
+  public async buildAuthRo(em: EntityManager, jwtTokens: IJwtTokens, user: User): Promise<IAuthRo> {
     return {
       tokens: jwtTokens,
-      user: await this._userService.buildUserRo(user),
+      user: await this._userService.buildUserRo(em, user),
     };
   }
 }

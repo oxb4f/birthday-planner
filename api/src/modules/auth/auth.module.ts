@@ -6,6 +6,7 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import * as authServices from "./services";
 import * as authControllers from "./controllers";
 import * as authStrategies from "./strategies";
+import * as authEntities from "./entities";
 import { ConfigService } from "../shared/services";
 import { UserModule } from "../user/user.module";
 import { User } from "../user/entities";
@@ -24,7 +25,7 @@ import { SharedModule } from "../shared/shared.module";
         },
       }),
     }),
-    MikroOrmModule.forFeature({ entities: [User] }),
+    MikroOrmModule.forFeature({ entities: [...Object.values(authEntities), User] }),
     forwardRef(() => UserModule),
     PassportModule.register({ defaultStrategy: "jwt" }),
   ],

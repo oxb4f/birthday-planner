@@ -1,10 +1,25 @@
-import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { UserService } from "../services";
 import { IUserRo } from "../interfaces";
 import { EntityManager } from "@mikro-orm/postgresql";
+import { GetUserFromRequest } from "../decorators";
+import { ValidationPipe } from "../../shared/pipes";
+import { UpdateUserDto } from "../dto";
+import { User } from "../entities";
 
 @ApiTags("user")
 @Controller()
@@ -25,6 +40,23 @@ export class UserController {
       throw new HttpException(`User does not exist: id = ${userId}`, HttpStatus.BAD_REQUEST);
     }
 
-    return { user: await this._userService.buildUserRo(user) };
+    return { user: await this._userService.buildUserRo(this._em, user) };
+  }
+
+  @ApiBearerAuth()
+  @Patch("/user/update")
+  @UseGuards(AuthGuard())
+  public async updateUser(
+    @GetUserFromRequest() user: User,
+    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
+  ): Promise<{ user: IUserRo }> {
+    const updatedUser: User | null = await this._em.transactional((em) =>
+      this._userService.updateUser(em, user.id, updateUserDto),
+    );
+    if (updatedUser === null) {
+      throw new HttpException(`Cannot update user with id ${user.id}`, HttpStatus.BAD_REQUEST);
+    }
+
+    return { user: await this._userService.buildUserRo(this._em, user) };
   }
 }

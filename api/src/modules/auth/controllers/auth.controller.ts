@@ -5,8 +5,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { ValidationPipe } from "../../shared/pipes";
 import { CreateUserDto } from "../../user/dto";
 import { AuthService } from "../services";
-import { IAuthRo } from "../interfaces";
-import { IJwtTokens } from "../interfaces";
+import { IAuthRo, IJwtTokens } from "../interfaces";
 import { UserService } from "../../user/services";
 import { CredentialsDto, RefreshDto, SignInDto } from "../dto";
 import { User } from "../../user/entities";
@@ -41,7 +40,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Post("/sign-in")
@@ -61,7 +60,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Post("/refresh")
@@ -85,7 +84,7 @@ export class AuthController {
       refreshToken: refreshToken.payload,
     };
 
-    return this._authService.buildAuthRo(tokens, user);
+    return this._authService.buildAuthRo(this._em, tokens, user);
   }
 
   @Get("/check-credentials")

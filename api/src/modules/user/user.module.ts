@@ -8,7 +8,7 @@ import { SharedModule } from "../shared/shared.module";
 import { AuthModule } from "../auth/auth.module";
 
 @Module({
-  imports: [MikroOrmModule.forFeature({ entities: Object.values(userEntities) }), SharedModule, AuthModule],
+  imports: [SharedModule, AuthModule, MikroOrmModule.forFeature({ entities: Object.values(userEntities) })],
   controllers: Object.values(userControllers),
   providers: Object.values(userServices),
   exports: Object.values(userServices),

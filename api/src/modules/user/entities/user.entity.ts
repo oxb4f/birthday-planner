@@ -1,11 +1,10 @@
-import { Entity, PrimaryKey, Property } from "mikro-orm";
+import { Entity, Property } from "mikro-orm";
 import * as crypto from "crypto";
 
-@Entity()
-export class User {
-  @PrimaryKey()
-  public readonly id: number;
+import { BaseEntity } from "../../shared/entities";
 
+@Entity()
+export class User extends BaseEntity {
   @Property({ unique: true })
   public readonly username: string;
 
@@ -21,13 +20,9 @@ export class User {
   @Property({ nullable: true })
   public readonly lastName?: string | null = null;
 
-  @Property()
-  public readonly createdAt: number = Math.floor(Date.now() / 1000);
-
-  @Property({ onUpdate: () => Math.floor(Date.now() / 1000) })
-  public readonly updatedAt: number = Math.floor(Date.now() / 1000);
-
   constructor(username: string, password: string, birthdayDate: string, firstName?: string, lastName?: string) {
+    super();
+
     this.username = username;
     this.password = User.passwordHash(password);
     this.birthdayDate = birthdayDate;
