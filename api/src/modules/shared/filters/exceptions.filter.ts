@@ -13,16 +13,19 @@ export class ExceptionsFilter implements ExceptionFilter {
 
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const apiResponse: { statusCode: number; message?: string; error?: unknown; stack?: Array<string> } = {
-      statusCode: status,
-    };
+    const apiResponse: { statusCode: number; response?: { message?: string; error?: unknown; stack?: Array<string> } } =
+      {
+        statusCode: status,
+      };
 
     if (this._configService.isDevelopment()) {
-      apiResponse.message = exception.message;
+      apiResponse.response = {};
+
+      apiResponse.response.message = exception.message;
       if (exception instanceof HttpException) {
-        apiResponse.error = exception.getResponse();
+        apiResponse.response.error = exception.getResponse();
       }
-      apiResponse.stack = ErrorStackParser.parse(exception).map(
+      apiResponse.response.stack = ErrorStackParser.parse(exception).map(
         (stackFrame) =>
           `${stackFrame.functionName} (${stackFrame.fileName}:${stackFrame.lineNumber}:${stackFrame.columnNumber})`,
       );

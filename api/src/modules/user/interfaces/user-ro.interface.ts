@@ -3,4 +3,5 @@ export interface IUserRo {
   readonly username: string;
   readonly firstName: string;
   readonly lastName: string;
+  readonly birthdayDate: string;
 }

@@ -47,7 +47,9 @@ export class WishlistService {
       wishlistId: wishlist.id,
       description: wishlist.description,
       user: await this._userService.buildUserRo(em, wishlist.user),
-      options: wishlist.options.getItems().map((option) => this._wishlistOptionService.buildWishlistOptionRo(option)),
+      options: await Promise.all(
+        wishlist.options.getItems().map((option) => this._wishlistOptionService.buildWishlistOptionRo(em, option)),
+      ),
     };
   }
 }

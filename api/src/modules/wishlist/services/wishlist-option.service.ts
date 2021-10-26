@@ -20,7 +20,9 @@ export class WishlistOptionService {
     return wishlistOption;
   }
 
-  public buildWishlistOptionRo(wishlistOption: WishlistOption): IWishlistOptionRo {
+  public async buildWishlistOptionRo(em: EntityManager, wishlistOption: WishlistOption): Promise<IWishlistOptionRo> {
+    await em.populate(wishlistOption, []);
+
     return {
       optionId: wishlistOption.id,
       text: wishlistOption.text,

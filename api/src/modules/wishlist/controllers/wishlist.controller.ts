@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -15,6 +15,7 @@ import { User } from "../../user/entities";
 export class WishlistController {
   constructor(protected readonly _em: EntityManager, protected readonly _wishlistService: WishlistService) {}
 
+  @ApiBearerAuth()
   @Post("/wishlist")
   @UseGuards(AuthGuard())
   public async createWishlist(
