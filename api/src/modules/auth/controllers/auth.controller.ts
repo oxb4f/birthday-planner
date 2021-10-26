@@ -1,8 +1,7 @@
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
-import { ValidationPipe } from "../../shared/pipes";
 import { CreateUserDto } from "../../user/dto";
 import { AuthService } from "../services";
 import { IAuthRo, IJwtTokens } from "../interfaces";

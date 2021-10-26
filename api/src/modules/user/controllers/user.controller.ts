@@ -9,6 +9,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  ValidationPipe,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -17,7 +18,6 @@ import { UserService } from "../services";
 import { IUserRo } from "../interfaces";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { GetUserFromRequest } from "../decorators";
-import { ValidationPipe } from "../../shared/pipes";
 import { UpdateUserDto } from "../dto";
 import { User } from "../entities";
 

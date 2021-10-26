@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityManager, QueryBuilder } from "@mikro-orm/postgresql";
 
 import { CreateWishlistDto } from "../dto";
 import { User } from "../../user/entities";
@@ -7,6 +7,7 @@ import { Wishlist } from "../entities";
 import { WishlistOptionService } from "./wishlist-option.service";
 import { IWishlistRo } from "../interfaces";
 import { UserService } from "../../user/services";
+import { SearchWishlistDto } from "../dto/search-wishlist.dto";
 
 @Injectable()
 export class WishlistService {
@@ -38,6 +39,18 @@ export class WishlistService {
     const defaultPopulate = ["options", "user"];
 
     return em.findOne(Wishlist, { id: wishlistId }, [...defaultPopulate, ...populate]);
+  }
+
+  public async getWishlists(em: EntityManager, searchWishlistDto: SearchWishlistDto): Promise<Wishlist[]> {
+    const [offset, limit] = [searchWishlistDto.offset ?? 0, searchWishlistDto.limit ?? 15];
+
+    const wishlistsQuery: QueryBuilder<Wishlist> = em.createQueryBuilder(Wishlist, "w").select("w.*");
+
+    if (searchWishlistDto.userId !== undefined) {
+      wishlistsQuery.where({ user_id: searchWishlistDto.userId });
+    }
+
+    return wishlistsQuery.offset(offset).limit(limit).getResult();
   }
 
   public async buildWishlistRo(em: EntityManager, wishlist: Wishlist): Promise<IWishlistRo> {
