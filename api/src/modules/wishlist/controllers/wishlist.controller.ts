@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { AuthGuard } from "@nestjs/passport";
 
-import { ValidationPipe } from "../../shared/pipes";
 import { CreateWishlistDto } from "../dto";
 import { IWishlistRo } from "../interfaces";
 import { WishlistService } from "../services";
 import { GetUserFromRequest } from "../../user/decorators";
 import { User } from "../../user/entities";
+import { SearchWishlistDto } from "../dto/search-wishlist.dto";
 
 @ApiTags("wishlist")
 @Controller()
@@ -36,5 +36,16 @@ export class WishlistController {
     const wishlist = await this._wishlistService.getWishlistByWishlistId(this._em, wishlistId);
 
     return { wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist) };
+  }
+
+  @ApiBearerAuth()
+  @Get("/wishlists")
+  @UseGuards(AuthGuard())
+  public async getWishlists(
+    @Query(new ValidationPipe({ transform: true })) searchWishlistDto: SearchWishlistDto,
+  ): Promise<IWishlistRo[]> {
+    const wishlists = await this._wishlistService.getWishlists(this._em, searchWishlistDto);
+
+    return Promise.all(wishlists.map((wishlist) => this._wishlistService.buildWishlistRo(this._em, wishlist)));
   }
 }
