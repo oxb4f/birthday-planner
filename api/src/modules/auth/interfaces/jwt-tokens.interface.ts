@@ -1,4 +1,4 @@
-export interface IJwtTokens {
+export interface JwtTokens {
   readonly accessToken: string;
   readonly refreshToken?: string;
 }

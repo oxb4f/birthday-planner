@@ -6,7 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import { UserService } from "../../user/services";
 import { CreateUserDto } from "../../user/dto";
 import { User } from "../../user/entities";
-import { IAuthRo, IJwtPayload, IJwtTokens } from "../interfaces";
+import { AuthRo, JwtPayload, JwtTokens } from "../interfaces";
 import { CredentialsDto, SignInDto } from "../dto";
 import { RefreshToken } from "../entities";
 import { GeneratorService } from "../../shared/services";
@@ -110,11 +110,11 @@ export class AuthService {
     return this.generateRefreshToken(em, newRefreshTokenExpirationTime, user);
   }
 
-  public generateJwtAccessToken(payload: IJwtPayload): string {
+  public generateJwtAccessToken(payload: JwtPayload): string {
     return this._jwtService.sign(payload);
   }
 
-  public async buildAuthRo(em: EntityManager, jwtTokens: IJwtTokens, user: User): Promise<IAuthRo> {
+  public async buildAuthRo(em: EntityManager, jwtTokens: JwtTokens, user: User): Promise<AuthRo> {
     return {
       tokens: jwtTokens,
       user: await this._userService.buildUserRo(em, user),

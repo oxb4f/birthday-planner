@@ -1,7 +1,7 @@
-import { IJwtTokens } from "./jwt-tokens.interface";
-import { IUserRo } from "../../user/interfaces";
+import { JwtTokens } from "./jwt-tokens.interface";
+import { UserRo } from "../../user/interfaces";
 
-export interface IAuthRo {
-  readonly tokens: IJwtTokens;
-  readonly user: Partial<IUserRo>;
+export interface AuthRo {
+  readonly tokens: JwtTokens;
+  readonly user: Partial<UserRo>;
 }

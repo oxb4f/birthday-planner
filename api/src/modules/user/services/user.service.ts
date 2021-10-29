@@ -4,7 +4,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto, UpdateUserDto } from "../dto";
 import { User } from "../entities";
-import { IUserRo } from "../interfaces";
+import { UserRo } from "../interfaces";
 import { wrap } from "mikro-orm";
 
 @Injectable()
@@ -63,7 +63,7 @@ export class UserService {
     return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
   }
 
-  public async buildUserRo(em: EntityManager, user: User): Promise<IUserRo> {
+  public async buildUserRo(em: EntityManager, user: User): Promise<UserRo> {
     await em.populate(user, []);
 
     return {
