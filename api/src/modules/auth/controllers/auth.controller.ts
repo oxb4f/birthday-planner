@@ -4,7 +4,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto } from "../../user/dto";
 import { AuthService } from "../services";
-import { IAuthRo, IJwtTokens } from "../interfaces";
+import { AuthRo, JwtTokens } from "../interfaces";
 import { UserService } from "../../user/services";
 import { CredentialsDto, RefreshDto, SignInDto } from "../dto";
 import { User } from "../../user/entities";
@@ -22,7 +22,7 @@ export class AuthController {
   ) {}
 
   @Post("/sign-up")
-  public async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<IAuthRo> {
+  public async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<AuthRo> {
     const [user, refreshToken] = await this._em.transactional(async (em): Promise<[User, RefreshToken]> => {
       const user = await this._authService.signUp(em, createUserDto);
       const refreshToken = await this._authService.generateRefreshToken(
@@ -34,7 +34,7 @@ export class AuthController {
       return [user, refreshToken];
     });
 
-    const tokens: IJwtTokens = {
+    const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
       refreshToken: refreshToken.payload,
     };
@@ -43,7 +43,7 @@ export class AuthController {
   }
 
   @Post("/sign-in")
-  public async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IAuthRo> {
+  public async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<AuthRo> {
     const user: User | null = await this._authService.signIn(this._em, signInDto);
     if (user === null) {
       throw new HttpException("Cannot sign in: invalid credentials", HttpStatus.BAD_REQUEST);
@@ -54,7 +54,7 @@ export class AuthController {
         this._authService.generateRefreshToken(em, this._configService.getNumber("JWT_EXPIRATION_TIME") * 3, user),
     );
 
-    const tokens: IJwtTokens = {
+    const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
       refreshToken: refreshToken.payload,
     };
@@ -63,7 +63,7 @@ export class AuthController {
   }
 
   @Post("/refresh")
-  public async refresh(@Body(new ValidationPipe()) refreshDto: RefreshDto): Promise<IAuthRo> {
+  public async refresh(@Body(new ValidationPipe()) refreshDto: RefreshDto): Promise<AuthRo> {
     const refreshToken: RefreshToken | null = await this._em.transactional(
       (em): Promise<RefreshToken> =>
         this._authService.refresh(
@@ -78,7 +78,7 @@ export class AuthController {
 
     const { user } = refreshToken;
 
-    const tokens: IJwtTokens = {
+    const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({ userId: user.id, username: user.username }),
       refreshToken: refreshToken.payload,
     };

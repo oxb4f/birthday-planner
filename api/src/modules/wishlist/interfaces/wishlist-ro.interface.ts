@@ -1,9 +1,9 @@
-import { IUserRo } from "../../user/interfaces";
-import { IWishlistOptionRo } from "./wishlist-option-ro.interface";
+import { UserRo } from "../../user/interfaces";
+import { WishlistOptionRo } from "./wishlist-option-ro.interface";
 
-export interface IWishlistRo {
+export interface WishlistRo {
   readonly wishlistId: number;
-  readonly user: IUserRo;
+  readonly user: UserRo;
   readonly description?: string | null;
-  readonly options: ReadonlyArray<IWishlistOptionRo>;
+  readonly options: ReadonlyArray<WishlistOptionRo>;
 }

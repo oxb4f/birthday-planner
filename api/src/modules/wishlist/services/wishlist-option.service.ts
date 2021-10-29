@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Wishlist, WishlistOption } from "../entities";
-import { IWishlistOptionRo } from "../interfaces";
+import { WishlistOptionRo } from "../interfaces";
 import { WishlistOptionDto } from "../dto";
 
 @Injectable()
@@ -20,7 +20,7 @@ export class WishlistOptionService {
     return wishlistOption;
   }
 
-  public async buildWishlistOptionRo(em: EntityManager, wishlistOption: WishlistOption): Promise<IWishlistOptionRo> {
+  public async buildWishlistOptionRo(em: EntityManager, wishlistOption: WishlistOption): Promise<WishlistOptionRo> {
     await em.populate(wishlistOption, []);
 
     return {

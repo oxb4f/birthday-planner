@@ -5,7 +5,7 @@ import { CreateWishlistDto } from "../dto";
 import { User } from "../../user/entities";
 import { Wishlist } from "../entities";
 import { WishlistOptionService } from "./wishlist-option.service";
-import { IWishlistRo } from "../interfaces";
+import { WishlistRo } from "../interfaces";
 import { UserService } from "../../user/services";
 import { SearchWishlistDto } from "../dto/search-wishlist.dto";
 
@@ -53,7 +53,7 @@ export class WishlistService {
     return wishlistsQuery.offset(offset).limit(limit).getResult();
   }
 
-  public async buildWishlistRo(em: EntityManager, wishlist: Wishlist): Promise<IWishlistRo> {
+  public async buildWishlistRo(em: EntityManager, wishlist: Wishlist): Promise<WishlistRo> {
     await em.populate(wishlist, ["options", "user"]);
 
     return {
