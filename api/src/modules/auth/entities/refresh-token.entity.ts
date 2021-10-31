@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "mikro-orm";
+import { Entity, Index, ManyToOne, PrimaryKey, Property } from "mikro-orm";
 
 import { User } from "../../user/entities";
 
@@ -13,6 +13,7 @@ export class RefreshToken {
   @Property()
   public readonly expiresAt: number;
 
+  @Index({ name: "refresh_token_userId_index" })
   @ManyToOne({ onDelete: "cascade" })
   public readonly user: User;
 

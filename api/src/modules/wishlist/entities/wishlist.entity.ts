@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "mikro-orm";
+import { Collection, Entity, Index, ManyToOne, OneToMany, Property } from "mikro-orm";
 
 import { BaseEntity } from "../../shared/entities";
 import { User } from "../../user/entities";
@@ -9,6 +9,7 @@ export class Wishlist extends BaseEntity {
   @Property({ nullable: true })
   public readonly description: string | null = null;
 
+  @Index({ name: "wishlist_userId_index" })
   @ManyToOne()
   public readonly user: User;
 
