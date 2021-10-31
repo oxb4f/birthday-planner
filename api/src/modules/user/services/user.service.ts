@@ -4,8 +4,9 @@ import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateUserDto, UpdateUserDto } from "../dto";
 import { User } from "../entities";
-import { UserRo } from "../interfaces";
+import { UserRo, UserRoOptions } from "../interfaces";
 import { wrap } from "mikro-orm";
+import { Mutable } from "../../shared/types";
 
 @Injectable()
 export class UserService {
@@ -63,15 +64,27 @@ export class UserService {
     return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
   }
 
-  public async buildUserRo(em: EntityManager, user: User): Promise<UserRo> {
-    await em.populate(user, []);
-
-    return {
+  public async buildUserRo(em: EntityManager, user: User, options?: UserRoOptions): Promise<UserRo> {
+    const userRo = {
       userId: user.id,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       birthdayDate: user.birthdayDate,
-    };
+    } as Mutable<UserRo>;
+
+    const populate: Array<string> = [];
+
+    if (!!options?.numberOfWishlists) {
+      populate.push("wishlists");
+    }
+
+    if (populate.length > 0) {
+      await em.populate(user, populate);
+    }
+
+    userRo.numberOfWishlists = !!options?.numberOfWishlists ? user.wishlists.length : undefined;
+
+    return userRo;
   }
 }

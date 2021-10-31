@@ -40,7 +40,7 @@ export class UserController {
       throw new HttpException(`User does not exist: id = ${userId}`, HttpStatus.BAD_REQUEST);
     }
 
-    return { user: await this._userService.buildUserRo(this._em, user) };
+    return { user: await this._userService.buildUserRo(this._em, user, { numberOfWishlists: true }) };
   }
 
   @ApiBearerAuth()

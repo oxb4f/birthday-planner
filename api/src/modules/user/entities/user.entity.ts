@@ -1,7 +1,8 @@
-import { Entity, Property } from "mikro-orm";
+import { Collection, Entity, OneToMany, Property } from "mikro-orm";
 import * as crypto from "crypto";
 
 import { BaseEntity } from "../../shared/entities";
+import { Wishlist } from "../../wishlist/entities";
 
 @Entity()
 export class User extends BaseEntity {
@@ -20,6 +21,9 @@ export class User extends BaseEntity {
   @Property({ nullable: true })
   public readonly lastName?: string | null = null;
 
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+  public readonly wishlists = new Collection<Wishlist>(this);
+
   constructor(username: string, password: string, birthdayDate: string, firstName?: string, lastName?: string) {
     super();
 
@@ -27,12 +31,8 @@ export class User extends BaseEntity {
     this.password = User.passwordHash(password);
     this.birthdayDate = birthdayDate;
 
-    if (firstName !== undefined) {
-      this.firstName = firstName;
-    }
-    if (lastName !== undefined) {
-      this.lastName = lastName;
-    }
+    this.firstName = firstName ?? this.firstName;
+    this.lastName = lastName ?? this.lastName;
   }
 
   public static passwordHash(password: string): string {

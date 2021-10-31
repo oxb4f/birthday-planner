@@ -21,8 +21,6 @@ export class Wishlist extends BaseEntity {
 
     this.user = user;
 
-    if (description !== undefined) {
-      this.description = description;
-    }
+    this.description = description ?? this.description;
   }
 }
