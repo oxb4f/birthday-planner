@@ -35,8 +35,10 @@ export class UserController {
   @Get("/user/:userId")
   @UseGuards(AuthGuard())
   public async getUserByUserId(@Param("userId", ParseIntPipe) userId: number): Promise<{ user: UserRo }> {
-    const user = await this._userService.getUserByUserId(this._em, userId);
-    if (user === null) {
+    let user;
+    try {
+      user = await this._userService.getUserByUserId(this._em, userId);
+    } catch (error) {
       throw new HttpException(`User does not exist: id = ${userId}`, HttpStatus.BAD_REQUEST);
     }
 
@@ -50,13 +52,8 @@ export class UserController {
     @GetUserFromRequest() user: User,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ): Promise<{ user: UserRo }> {
-    const updatedUser: User | null = await this._em.transactional((em) =>
-      this._userService.updateUser(em, user.id, updateUserDto),
-    );
-    if (updatedUser === null) {
-      throw new HttpException(`Cannot update user with id ${user.id}`, HttpStatus.BAD_REQUEST);
-    }
+    const updatedUser = await this._em.transactional((em) => this._userService.updateUser(em, user.id, updateUserDto));
 
-    return { user: await this._userService.buildUserRo(this._em, user) };
+    return { user: await this._userService.buildUserRo(this._em, updatedUser) };
   }
 }

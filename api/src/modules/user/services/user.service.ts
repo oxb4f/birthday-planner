@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 
@@ -28,33 +28,26 @@ export class UserService {
     return (await em.count(User, { [field]: value })) === 0;
   }
 
-  public async getUserByUserId(em: EntityManager, userId: number, populate: Array<string> = []): Promise<User | null> {
+  public async getUserByUserId(em: EntityManager, userId: number, populate: Array<string> = []): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOne(User, { id: userId }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, { id: userId }, [...defaultPopulate, ...populate]);
   }
 
-  public async getUserByUsername(
-    em: EntityManager,
-    username: string,
-    populate: Array<string> = [],
-  ): Promise<User | null> {
+  public async getUserByUsername(em: EntityManager, username: string, populate: Array<string> = []): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOne(User, { username }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, { username }, [...defaultPopulate, ...populate]);
   }
 
-  public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    const user: User | null = await this.getUserByUserId(em, userId);
-    if (user === null) {
-      return null;
-    }
+  public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.getUserByUserId(em, userId);
 
     if (
       updateUserDto.username !== undefined &&
       !(await this.checkFieldForUniqueness(em, "username", updateUserDto.username))
     ) {
-      return null;
+      throw new HttpException("Username already belongs to the user", HttpStatus.BAD_REQUEST);
     }
 
     return wrap(user).assign(updateUserDto, { mergeObjects: true });

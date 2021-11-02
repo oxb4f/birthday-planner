@@ -35,10 +35,10 @@ export class WishlistService {
     em: EntityManager,
     wishlistId: number,
     populate: Array<string> = [],
-  ): Promise<Wishlist | null> {
+  ): Promise<Wishlist> {
     const defaultPopulate = ["options", "user"];
 
-    return em.findOne(Wishlist, { id: wishlistId }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(Wishlist, { id: wishlistId }, [...defaultPopulate, ...populate]);
   }
 
   public async getWishlists(em: EntityManager, searchWishlistDto: SearchWishlistDto): Promise<Wishlist[]> {
