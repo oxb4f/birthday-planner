@@ -7,7 +7,7 @@ import { Wishlist } from "../entities";
 import { WishlistOptionService } from "./wishlist-option.service";
 import { WishlistRo } from "../interfaces";
 import { UserService } from "../../user/services";
-import { SearchWishlistDto } from "../dto/search-wishlist.dto";
+import { SearchWishlistDto } from "../dto";
 
 @Injectable()
 export class WishlistService {
