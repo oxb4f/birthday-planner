@@ -1,11 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
-
-import { CreateUserDto, UpdateUserDto } from "../dto";
-import { User } from "../entities";
-import { UserRo } from "../interfaces";
 import { wrap } from "mikro-orm";
+
+import { User } from "../entities";
+import { CreateUserDto, UpdateUserDto } from "../dto";
+import { UserRo, UserRoOptions } from "../interfaces";
+import { Mutable } from "../../shared/types";
 
 @Injectable()
 export class UserService {
@@ -27,33 +28,26 @@ export class UserService {
     return (await em.count(User, { [field]: value })) === 0;
   }
 
-  public async getUserByUserId(em: EntityManager, userId: number, populate: Array<string> = []): Promise<User | null> {
+  public async getUserByUserId(em: EntityManager, userId: number, populate: Array<string> = []): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOne(User, { id: userId }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, { id: userId }, [...defaultPopulate, ...populate]);
   }
 
-  public async getUserByUsername(
-    em: EntityManager,
-    username: string,
-    populate: Array<string> = [],
-  ): Promise<User | null> {
+  public async getUserByUsername(em: EntityManager, username: string, populate: Array<string> = []): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOne(User, { username }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, { username }, [...defaultPopulate, ...populate]);
   }
 
-  public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    const user: User | null = await this.getUserByUserId(em, userId);
-    if (user === null) {
-      return null;
-    }
+  public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.getUserByUserId(em, userId);
 
     if (
       updateUserDto.username !== undefined &&
       !(await this.checkFieldForUniqueness(em, "username", updateUserDto.username))
     ) {
-      return null;
+      throw new HttpException("Username already belongs to the user", HttpStatus.BAD_REQUEST);
     }
 
     return wrap(user).assign(updateUserDto, { mergeObjects: true });
@@ -63,15 +57,27 @@ export class UserService {
     return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
   }
 
-  public async buildUserRo(em: EntityManager, user: User): Promise<UserRo> {
-    await em.populate(user, []);
-
-    return {
+  public async buildUserRo(em: EntityManager, user: User, options?: UserRoOptions): Promise<UserRo> {
+    const userRo = {
       userId: user.id,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       birthdayDate: user.birthdayDate,
-    };
+    } as Mutable<UserRo>;
+
+    const populate: Array<string> = [];
+
+    if (!!options?.numberOfWishlists) {
+      populate.push("wishlists");
+    }
+
+    if (populate.length > 0) {
+      await em.populate(user, populate);
+    }
+
+    userRo.numberOfWishlists = !!options?.numberOfWishlists ? user.wishlists.length : undefined;
+
+    return userRo;
   }
 }

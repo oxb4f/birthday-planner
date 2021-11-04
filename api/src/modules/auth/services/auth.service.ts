@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { JwtService } from "@nestjs/jwt";
@@ -26,11 +26,11 @@ export class AuthService {
     return this._userService.createUser(em, createUserDto);
   }
 
-  public async signIn(em: EntityManager, signInDto: SignInDto): Promise<User | null> {
-    const user: User | null = await this._userService.getUserByUsername(em, signInDto.username);
+  public async signIn(em: EntityManager, signInDto: SignInDto): Promise<User> {
+    const user = await this._userService.getUserByUsername(em, signInDto.username);
 
-    if (!(user !== null && user.password === User.passwordHash(signInDto.password))) {
-      return null;
+    if (!(user.password === User.passwordHash(signInDto.password))) {
+      throw new HttpException("Invalid password", HttpStatus.BAD_REQUEST);
     }
 
     return user;
@@ -87,21 +87,18 @@ export class AuthService {
     em: EntityManager,
     refreshTokenPayload: string,
     populate: Array<string> = [],
-  ): Promise<RefreshToken | null> {
+  ): Promise<RefreshToken> {
     const defaultPopulate = ["user"];
 
-    return em.findOne(RefreshToken, { payload: refreshTokenPayload }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(RefreshToken, { payload: refreshTokenPayload }, [...defaultPopulate, ...populate]);
   }
 
   public async refresh(
     em: EntityManager,
     refreshTokenPayload: string,
     newRefreshTokenExpirationTime: number,
-  ): Promise<RefreshToken | null> {
-    const refreshToken: RefreshToken | null = await this.getRefreshTokenByRefreshTokenPayload(em, refreshTokenPayload);
-    if (refreshToken === null) {
-      return null;
-    }
+  ): Promise<RefreshToken> {
+    const refreshToken = await this.getRefreshTokenByRefreshTokenPayload(em, refreshTokenPayload);
 
     const { user } = refreshToken;
 

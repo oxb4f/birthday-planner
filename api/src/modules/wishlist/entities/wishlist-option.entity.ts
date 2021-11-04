@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from "mikro-orm";
+import { Entity, Index, ManyToOne, Property } from "mikro-orm";
 
 import { BaseEntity } from "../../shared/entities";
 import { Wishlist } from "./wishlist.entity";
@@ -8,6 +8,7 @@ export class WishlistOption extends BaseEntity {
   @Property()
   public readonly text: string;
 
+  @Index({ name: "wishlist_option_wishlistId_index" })
   @ManyToOne({ onDelete: "cascade" })
   public readonly wishlist: Wishlist;
 

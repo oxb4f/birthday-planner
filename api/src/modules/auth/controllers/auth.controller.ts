@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { EntityManager } from "@mikro-orm/postgresql";
 
@@ -44,10 +44,7 @@ export class AuthController {
 
   @Post("/sign-in")
   public async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<AuthRo> {
-    const user: User | null = await this._authService.signIn(this._em, signInDto);
-    if (user === null) {
-      throw new HttpException("Cannot sign in: invalid credentials", HttpStatus.BAD_REQUEST);
-    }
+    const user = await this._authService.signIn(this._em, signInDto);
 
     const refreshToken = await this._em.transactional(
       (em): Promise<RefreshToken> =>
@@ -64,7 +61,7 @@ export class AuthController {
 
   @Post("/refresh")
   public async refresh(@Body(new ValidationPipe()) refreshDto: RefreshDto): Promise<AuthRo> {
-    const refreshToken: RefreshToken | null = await this._em.transactional(
+    const refreshToken = await this._em.transactional(
       (em): Promise<RefreshToken> =>
         this._authService.refresh(
           em,
@@ -72,9 +69,6 @@ export class AuthController {
           this._configService.getNumber("JWT_EXPIRATION_TIME") * 3,
         ),
     );
-    if (refreshToken === null) {
-      throw new HttpException("Bad refresh token", HttpStatus.UNAUTHORIZED);
-    }
 
     const { user } = refreshToken;
 
