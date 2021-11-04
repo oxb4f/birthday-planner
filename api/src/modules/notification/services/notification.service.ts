@@ -18,13 +18,18 @@ import {
 } from "../interfaces";
 import { FriendService, UserService } from "../../user/services";
 import { NotificationType } from "../constants/enums";
+import { NotificationEventsGateway } from "../events";
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
 @Injectable()
 export class NotificationService {
   constructor(
     protected readonly _em: EntityManager,
     protected readonly _userService: UserService,
+    protected readonly _notificationEventsGateway: NotificationEventsGateway,
     @Inject(forwardRef(() => FriendService)) protected readonly _friendService: FriendService,
+    @InjectPinoLogger(NotificationService.name)
+    protected readonly _logger: PinoLogger,
   ) {}
 
   public async createChangedFriendRequestStatusNotification(
@@ -34,7 +39,15 @@ export class NotificationService {
   ): Promise<ChangedFriendRequestStatusNotification> {
     const changedFriendRequestStatusNotification = new ChangedFriendRequestStatusNotification(friendRequest, to);
 
-    em.persist(changedFriendRequestStatusNotification);
+    await em.persistAndFlush(changedFriendRequestStatusNotification);
+
+    this._notificationEventsGateway
+      .emitNewNotification(
+        NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
+        to.id,
+        await this.buildChangedFriendRequestStatusNotificationRo(em, changedFriendRequestStatusNotification),
+      )
+      .catch(this._logger.error.bind(this._logger));
 
     return changedFriendRequestStatusNotification;
   }
@@ -46,7 +59,15 @@ export class NotificationService {
   ): Promise<IncomingFriendRequestNotification> {
     const incomingFriendRequestNotification = new IncomingFriendRequestNotification(friendRequest, to);
 
-    em.persist(incomingFriendRequestNotification);
+    await em.persistAndFlush(incomingFriendRequestNotification);
+
+    this._notificationEventsGateway
+      .emitNewNotification(
+        NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
+        to.id,
+        await this.buildChangedFriendRequestStatusNotificationRo(em, incomingFriendRequestNotification),
+      )
+      .catch(this._logger.error.bind(this._logger));
 
     return incomingFriendRequestNotification;
   }

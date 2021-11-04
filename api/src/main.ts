@@ -22,13 +22,15 @@ function setupSwagger(app: INestApplication): void {
 }
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   const configService = app.select(SharedModule).get(ConfigService);
 
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalFilters(new ExceptionsFilter(configService));
   app.useGlobalInterceptors(new ResponseInterceptor());
+
+  // app.enableCors({ origin: true, credentials: true });
 
   app.useLogger(app.get(Logger));
   app.use(helmet());
