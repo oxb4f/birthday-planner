@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
@@ -7,12 +7,14 @@ import { FriendRequestRo, FriendRequestRoOptions, FriendRo, FriendRoOptions } fr
 import { UserService } from "./user.service";
 import { Mutable } from "../../shared/types";
 import { FriendRequestStatus } from "../constants/enums";
+import { NotificationService } from "../../notification/services";
 
 @Injectable()
 export class FriendService {
   constructor(
     protected readonly _em: EntityManager,
     protected readonly _userService: UserService,
+    @Inject(forwardRef(() => NotificationService)) protected readonly _notificationService: NotificationService,
     @InjectPinoLogger(FriendService.name)
     protected readonly _logger: PinoLogger,
   ) {}
@@ -46,6 +48,8 @@ export class FriendService {
 
     em.persist(friendRequest);
 
+    await this._notificationService.createIncomingFriendRequestNotification(em, friendRequest, to);
+
     return friendRequest;
   }
 
@@ -75,6 +79,8 @@ export class FriendService {
     }
 
     friendRequest.status = newStatus;
+
+    await this._notificationService.createChangedFriendRequestStatusNotification(em, friendRequest, friendRequest.from);
 
     return friendRequest;
   }

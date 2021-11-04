@@ -11,8 +11,8 @@ export class FriendBirthdayNotification extends Notification {
   @ManyToOne()
   public readonly user: User;
 
-  constructor(user: User) {
-    super(NotificationType.FRIEND_BIRTHDAY_NOTIFICATION);
+  constructor(user: User, to: User) {
+    super(NotificationType.FRIEND_BIRTHDAY_NOTIFICATION, to);
 
     this.user = user;
   }

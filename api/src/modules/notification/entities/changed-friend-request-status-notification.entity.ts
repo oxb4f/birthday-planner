@@ -1,7 +1,7 @@
 import { Entity, ManyToOne } from "mikro-orm";
 
 import { Notification } from "./notification.entity";
-import { FriendRequest } from "../../user/entities";
+import { FriendRequest, User } from "../../user/entities";
 import { NotificationType } from "../constants/enums";
 
 @Entity({
@@ -11,8 +11,8 @@ export class ChangedFriendRequestStatusNotification extends Notification {
   @ManyToOne()
   public readonly friendRequest: FriendRequest;
 
-  constructor(friendRequest: FriendRequest) {
-    super(NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION);
+  constructor(friendRequest: FriendRequest, to: User) {
+    super(NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION, to);
 
     this.friendRequest = friendRequest;
   }

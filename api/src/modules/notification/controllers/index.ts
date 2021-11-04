@@ -1,1 +1,1 @@
-// controllers
+export * from "./notification.controller";

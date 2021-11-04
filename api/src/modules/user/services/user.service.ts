@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
-
-import { CreateUserDto, UpdateUserDto } from "../dto";
-import { User } from "../entities";
-import { UserRo, UserRoOptions } from "../interfaces";
 import { wrap } from "mikro-orm";
+
+import { User } from "../entities";
+import { CreateUserDto, UpdateUserDto } from "../dto";
+import { UserRo, UserRoOptions } from "../interfaces";
 import { Mutable } from "../../shared/types";
 
 @Injectable()
