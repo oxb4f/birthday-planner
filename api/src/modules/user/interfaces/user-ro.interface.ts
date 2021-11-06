@@ -6,9 +6,10 @@ export interface UserRoOptions {
 export interface UserRo {
   readonly userId: number;
   readonly username: string;
+  readonly email: string;
   readonly firstName: string | null;
   readonly lastName: string | null;
-  readonly birthdayDate: string;
+  readonly birthdayDate: number;
   readonly numberOfWishlists?: number;
   readonly numberOfFriends?: number;
 }

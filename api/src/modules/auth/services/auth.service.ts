@@ -6,28 +6,29 @@ import { JwtService } from "@nestjs/jwt";
 import { UserService } from "../../user/services";
 import { CreateUserDto } from "../../user/dto";
 import { User } from "../../user/entities";
-import { AuthRo, JwtPayload, JwtTokens } from "../interfaces";
 import { CredentialsDto, SignInDto } from "../dto";
-import { RefreshToken } from "../entities";
 import { GeneratorService } from "../../shared/services";
+import { BaseAuthService } from "./base-auth.service";
 
 @Injectable()
-export class AuthService {
+export class AuthService extends BaseAuthService {
   constructor(
-    protected readonly _em: EntityManager,
-    protected readonly _jwtService: JwtService,
-    protected readonly _userService: UserService,
-    protected readonly _generatorService: GeneratorService,
+    em: EntityManager,
+    jwtService: JwtService,
+    userService: UserService,
+    generatorService: GeneratorService,
     @InjectPinoLogger(AuthService.name)
-    protected readonly _logger: PinoLogger,
-  ) {}
+    logger: PinoLogger,
+  ) {
+    super(em, jwtService, userService, generatorService, logger);
+  }
 
   public async signUp(em: EntityManager, createUserDto: CreateUserDto): Promise<User> {
     return this._userService.createUser(em, createUserDto);
   }
 
   public async signIn(em: EntityManager, signInDto: SignInDto): Promise<User> {
-    const user = await this._userService.getUserByUsername(em, signInDto.username);
+    const user = await this._userService.getUser(em, { username: signInDto.username });
 
     if (!(user.password === User.passwordHash(signInDto.password))) {
       throw new HttpException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -68,53 +69,5 @@ export class AuthService {
     }
 
     return true;
-  }
-
-  public async generateRefreshToken(em: EntityManager, expirationTime: number, user: User): Promise<RefreshToken> {
-    let payload: string;
-    do {
-      payload = this._generatorService.randomHex(32);
-    } while ((await em.count(RefreshToken, { payload })) > 0);
-
-    const refreshToken = new RefreshToken(payload, expirationTime, user);
-
-    em.persist(refreshToken);
-
-    return refreshToken;
-  }
-
-  public async getRefreshTokenByRefreshTokenPayload(
-    em: EntityManager,
-    refreshTokenPayload: string,
-    populate: Array<string> = [],
-  ): Promise<RefreshToken> {
-    const defaultPopulate = ["user"];
-
-    return em.findOneOrFail(RefreshToken, { payload: refreshTokenPayload }, [...defaultPopulate, ...populate]);
-  }
-
-  public async refresh(
-    em: EntityManager,
-    refreshTokenPayload: string,
-    newRefreshTokenExpirationTime: number,
-  ): Promise<RefreshToken> {
-    const refreshToken = await this.getRefreshTokenByRefreshTokenPayload(em, refreshTokenPayload);
-
-    const { user } = refreshToken;
-
-    em.remove(refreshToken);
-
-    return this.generateRefreshToken(em, newRefreshTokenExpirationTime, user);
-  }
-
-  public generateJwtAccessToken(payload: JwtPayload): string {
-    return this._jwtService.sign(payload);
-  }
-
-  public async buildAuthRo(em: EntityManager, jwtTokens: JwtTokens, user: User): Promise<AuthRo> {
-    return {
-      tokens: jwtTokens,
-      user: await this._userService.buildUserRo(em, user),
-    };
   }
 }

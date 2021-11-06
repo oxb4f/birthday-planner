@@ -36,7 +36,7 @@ export class FriendController {
     @Query("userId", ParseIntPipe) userId: number,
   ): Promise<{ friendRequest: FriendRequestRo }> {
     const friendRequest = await this._em.transactional(async (em) =>
-      this._friendService.createFriendRequest(em, user, await this._userService.getUserByUserId(em, userId)),
+      this._friendService.createFriendRequest(em, user, await this._userService.getUser(em, { id: userId })),
     );
 
     return {

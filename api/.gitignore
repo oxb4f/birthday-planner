@@ -3,4 +3,7 @@ dist
 node_modules
 temp
 mounted_volumes
-
+# env files
+test.js.html
+env/local/.env
+env/.env
