@@ -81,7 +81,9 @@ export class AuthController {
   }
 
   @Get("/check-credentials")
-  public async checkCredentials(@Query() credentialsDto: CredentialsDto): Promise<{ result: boolean }> {
+  public async checkCredentials(
+    @Query(new ValidationPipe({ transform: true })) credentialsDto: CredentialsDto,
+  ): Promise<{ result: boolean }> {
     return { result: await this._authService.checkCredentials(this._em, credentialsDto) };
   }
 }

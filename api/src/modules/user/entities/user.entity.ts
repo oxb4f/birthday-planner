@@ -43,6 +43,7 @@ export class User extends BaseEntity {
   ) {
     super();
 
+    this.email = email;
     this.username = username;
     this.password = User.passwordHash(password);
     this.birthdayDate = birthdayDate;

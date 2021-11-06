@@ -45,6 +45,6 @@ export class AuthGoogleService extends BaseAuthService {
   public async signUp(em: EntityManager, email: string): Promise<User> {
     const createUserGoogleDto = new CreateUserGoogleDto(email);
 
-    return this._userService.createUser(em, createUserGoogleDto);
+    return this._userService.createUser(em, true, createUserGoogleDto);
   }
 }

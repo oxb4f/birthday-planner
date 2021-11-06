@@ -24,7 +24,7 @@ export class AuthService extends BaseAuthService {
   }
 
   public async signUp(em: EntityManager, createUserDto: CreateUserDto): Promise<User> {
-    return this._userService.createUser(em, createUserDto);
+    return this._userService.createUser(em, false, createUserDto);
   }
 
   public async signIn(em: EntityManager, signInDto: SignInDto): Promise<User> {
@@ -37,34 +37,20 @@ export class AuthService extends BaseAuthService {
     return user;
   }
 
-  public checkPassword(password: string): boolean {
-    return (
-      password.length >= 8 &&
-      password.length <= 32 &&
-      /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(password)
-    );
+  public async checkEmail(em: EntityManager, email: string): Promise<boolean> {
+    return this._userService.checkFieldForUniqueness(em, "email", email);
   }
 
   public async checkUsername(em: EntityManager, username: string): Promise<boolean> {
-    return (
-      username.length >= 5 &&
-      username.length <= 25 &&
-      (await this._userService.checkFieldForUniqueness(em, "username", username))
-    );
+    return this._userService.checkFieldForUniqueness(em, "username", username);
   }
 
   public async checkCredentials(em: EntityManager, credentialsDto: CredentialsDto): Promise<boolean> {
     for (const key of Object.keys(credentialsDto)) {
-      let validationResult = false;
-
-      if (key === "password") {
-        validationResult = this.checkPassword(credentialsDto[key]);
-      } else if (key === "username") {
-        validationResult = await this.checkUsername(em, credentialsDto[key]);
-      }
-
-      if (!validationResult) {
-        return false;
+      if (key === "email" && !(await this.checkEmail(em, credentialsDto[key]))) {
+        throw new HttpException(`Email "${credentialsDto[key]}" violates unique constraint`, HttpStatus.BAD_REQUEST);
+      } else if (key === "username" && !(await this.checkUsername(em, credentialsDto[key]))) {
+        throw new HttpException(`Username "${credentialsDto[key]}" violates unique constraint`, HttpStatus.BAD_REQUEST);
       }
     }
 

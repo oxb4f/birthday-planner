@@ -10,7 +10,7 @@ export class Wishlist extends BaseEntity {
   public readonly description: string | null = null;
 
   @Index({ name: "wishlist_userId_index" })
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly user: User;
 
   @OneToMany(() => WishlistOption, (wishlistOption) => wishlistOption.wishlist)

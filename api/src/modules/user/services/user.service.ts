@@ -16,16 +16,20 @@ export class UserService {
     protected readonly _logger: PinoLogger,
   ) {}
 
-  public async createUser(em: EntityManager, userCreationSchema: CreateUserDto | CreateUserGoogleDto): Promise<User> {
+  public async createUser(
+    em: EntityManager,
+    registeredUsingGoogle: boolean,
+    userCreationSchema: CreateUserDto | CreateUserGoogleDto,
+  ): Promise<User> {
     let user: User;
 
-    if (userCreationSchema instanceof CreateUserDto) {
+    if (!registeredUsingGoogle) {
       user = new User(
         userCreationSchema.email,
         false,
-        userCreationSchema.username,
-        userCreationSchema.password,
-        userCreationSchema.birthdayDate,
+        (userCreationSchema as CreateUserDto).username,
+        (userCreationSchema as CreateUserDto).password,
+        (userCreationSchema as CreateUserDto).birthdayDate,
       );
     } else if (userCreationSchema instanceof CreateUserGoogleDto) {
       user = new User(userCreationSchema.email, true);
