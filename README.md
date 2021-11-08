@@ -1,2 +1,2 @@
 # birthday-planner
-Birthday planner
+Birthday planner - funny service for planning your best birthday with your friends. In developing
