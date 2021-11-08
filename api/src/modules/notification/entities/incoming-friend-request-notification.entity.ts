@@ -8,7 +8,7 @@ import { NotificationType } from "../constants/enums";
   discriminatorValue: NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
 })
 export class IncomingFriendRequestNotification extends Notification {
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly friendRequest: FriendRequest;
 
   constructor(friendRequest: FriendRequest, to: User) {

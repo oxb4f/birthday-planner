@@ -22,13 +22,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(payload: JwtPayload): Promise<User> {
-    let user: User;
     try {
-      user = await this._userService.getUserByUserId(this._em, payload.userId);
+      return this._userService.getUser(this._em, { id: payload.userId });
     } catch {
       throw new HttpException("User not found", HttpStatus.UNAUTHORIZED);
     }
-
-    return user;
   }
 }

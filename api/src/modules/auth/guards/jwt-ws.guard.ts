@@ -23,7 +23,7 @@ export class WsJwtGuard implements CanActivate {
 
       const jwtPayload: JwtPayload = jwt.verify(jwtToken, this._configService.get("JWT_SECRET_KEY")) as JwtPayload;
 
-      context.switchToWs().getData().user = await this._userService.getUserByUserId(this._em, jwtPayload.userId);
+      context.switchToWs().getData().user = await this._userService.getUser(this._em, { id: jwtPayload.userId });
 
       return true;
     } catch {

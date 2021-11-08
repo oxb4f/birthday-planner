@@ -4,7 +4,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { wrap } from "mikro-orm";
 
 import { User } from "../entities";
-import { CreateUserDto, UpdateUserDto } from "../dto";
+import { CreateUserDto, CreateUserGoogleDto, UpdateUserDto } from "../dto";
 import { UserRo, UserRoOptions } from "../interfaces";
 import { Mutable } from "../../shared/types";
 
@@ -16,8 +16,24 @@ export class UserService {
     protected readonly _logger: PinoLogger,
   ) {}
 
-  public async createUser(em: EntityManager, createUserDto: CreateUserDto): Promise<User> {
-    const user = new User(createUserDto.username, createUserDto.password, createUserDto.birthdayDate);
+  public async createUser(
+    em: EntityManager,
+    registeredUsingGoogle: boolean,
+    userCreationSchema: CreateUserDto | CreateUserGoogleDto,
+  ): Promise<User> {
+    let user: User;
+
+    if (!registeredUsingGoogle) {
+      user = new User(
+        userCreationSchema.email,
+        false,
+        (userCreationSchema as CreateUserDto).username,
+        (userCreationSchema as CreateUserDto).password,
+        (userCreationSchema as CreateUserDto).birthdayDate,
+      );
+    } else if (userCreationSchema instanceof CreateUserGoogleDto) {
+      user = new User(userCreationSchema.email, true);
+    }
 
     em.persist(user);
 
@@ -28,20 +44,18 @@ export class UserService {
     return (await em.count(User, { [field]: value })) === 0;
   }
 
-  public async getUserByUserId(em: EntityManager, userId: number, populate: Array<string> = []): Promise<User> {
+  public async getUser(
+    em: EntityManager,
+    filter: { [Prop in keyof User]+?: User[Prop] },
+    populate: Array<string> = [],
+  ): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOneOrFail(User, { id: userId }, [...defaultPopulate, ...populate]);
-  }
-
-  public async getUserByUsername(em: EntityManager, username: string, populate: Array<string> = []): Promise<User> {
-    const defaultPopulate = [];
-
-    return em.findOneOrFail(User, { username }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, filter as Required<typeof filter>, [...defaultPopulate, ...populate]);
   }
 
   public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.getUserByUserId(em, userId);
+    const user = await this.getUser(em, { id: userId });
 
     if (
       updateUserDto.username !== undefined &&
@@ -53,14 +67,11 @@ export class UserService {
     return wrap(user).assign(updateUserDto, { mergeObjects: true });
   }
 
-  public checkBirthdayDate(birthdayDate: string): boolean {
-    return /^(?:0[1-9]|[12]\d|3[01])[.](?:0[1-9]|1[012])[.](?:19|20)\d\d$/.test(birthdayDate);
-  }
-
   public async buildUserRo(em: EntityManager, user: User, options?: UserRoOptions): Promise<UserRo> {
     const userRo = {
       userId: user.id,
       username: user.username,
+      email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
       birthdayDate: user.birthdayDate,

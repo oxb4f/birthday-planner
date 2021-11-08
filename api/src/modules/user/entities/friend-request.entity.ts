@@ -8,11 +8,11 @@ import { FriendRequestStatus } from "../constants/enums";
 @Unique({ properties: ["from", "to"] })
 export class FriendRequest extends BaseEntity {
   @Index({ name: "friend_request_from_id_index" })
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly from: User;
 
   @Index({ name: "friend_request_to_id_index" })
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly to: User;
 
   @Enum()

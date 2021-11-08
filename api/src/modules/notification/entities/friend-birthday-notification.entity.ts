@@ -8,7 +8,7 @@ import { NotificationType } from "../constants/enums";
   discriminatorValue: NotificationType.FRIEND_BIRTHDAY_NOTIFICATION,
 })
 export class FriendBirthdayNotification extends Notification {
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly user: User;
 
   constructor(user: User, to: User) {

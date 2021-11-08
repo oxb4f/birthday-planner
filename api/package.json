@@ -44,6 +44,7 @@
     "dotenv": "^10.0.0",
     "error-stack-parser": "^2.0.6",
     "find-config": "^1.0.0",
+    "google-auth-library": "^7.10.2",
     "helmet": "^4.6.0",
     "mikro-orm": "^4.5.9",
     "mikro-orm-cache-adapter-redis": "^1.1.1",

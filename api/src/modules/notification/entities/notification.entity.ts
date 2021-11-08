@@ -12,7 +12,7 @@ export class Notification extends BaseEntity {
   @Enum()
   public readonly type: NotificationType;
 
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly to: User;
 
   constructor(type: NotificationType, to: User) {

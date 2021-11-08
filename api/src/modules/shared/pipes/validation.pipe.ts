@@ -15,7 +15,10 @@ export class ValidationPipe implements PipeTransform<unknown> {
 
     const errors = await validate(object);
     if (errors.length > 0) {
-      throw new HttpException({ ...errors }, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        errors.map((error) => Object.values(error.constraints || {}).join("\n")).join("\n"),
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return value;
