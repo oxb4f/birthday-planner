@@ -28,13 +28,10 @@ export class AuthService extends BaseAuthService {
   }
 
   public async signIn(em: EntityManager, signInDto: SignInDto): Promise<User> {
-    const user = await this._userService.getUser(em, { username: signInDto.username });
-
-    if (!(user.password === User.passwordHash(signInDto.password))) {
-      throw new HttpException("Invalid password", HttpStatus.BAD_REQUEST);
-    }
-
-    return user;
+    return this._userService.getUser(em, {
+      username: signInDto.username,
+      password: User.passwordHash(signInDto.password),
+    });
   }
 
   public async checkEmail(em: EntityManager, email: string): Promise<boolean> {
