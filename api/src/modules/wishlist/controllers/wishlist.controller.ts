@@ -48,10 +48,9 @@ export class WishlistController {
   public async getWishlistByWishlistId(
     @Param("wishlistId", ParseIntPipe) wishlistId: number,
   ): Promise<{ wishlist: WishlistRo }> {
-    const wishlist = await this._wishlistService.getWishlist(
-      this._em,
-      { id: wishlistId },
-    );
+    const wishlist = await this._wishlistService.getWishlist(this._em, {
+      id: wishlistId,
+    });
 
     return {
       wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist),

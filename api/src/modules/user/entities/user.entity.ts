@@ -8,20 +8,23 @@ import { Wishlist } from "../../wishlist/entities";
 export class User extends BaseEntity {
   @Index({ name: "user_username_index" })
   @Property({ unique: true, nullable: true })
-  public readonly username: string;
+  public readonly username: string | null;
 
   @Property({ nullable: true })
-  public readonly password: string;
+  public readonly password: string | null;
 
   @Index({ name: "user_email_index" })
   @Property({ unique: true })
   public readonly email: string;
 
+  @Property({ nullable: true })
+  public readonly avatar: string | null;
+
   @Property()
   public readonly registeredUsingGoogle: boolean;
 
   @Property({ nullable: true })
-  public readonly birthdayDate: number;
+  public readonly birthdayDate: number | null;
 
   @Property({ nullable: true })
   public readonly firstName: string | null;

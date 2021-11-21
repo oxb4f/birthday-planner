@@ -7,8 +7,6 @@ import { Wishlist } from "../entities";
 import { WishlistOptionService } from "./wishlist-option.service";
 import { WishlistRo } from "../interfaces";
 import { UserService } from "../../user/services";
-import { SearchWishlistDto } from "../dto";
-import { excludeKeys } from "src/modules/shared/helpers";
 
 @Injectable()
 export class WishlistService {
@@ -50,7 +48,7 @@ export class WishlistService {
     return em.findOneOrFail(Wishlist, filter as Required<typeof filter>, [
       ...defaultPopulate,
       ...populate,
-    ])
+    ]);
   }
 
   public async getWishlists(
@@ -62,10 +60,14 @@ export class WishlistService {
   ): Promise<Wishlist[]> {
     const defaultPopulate = ["options", "user"];
 
-    return em.find(Wishlist, filter as Required<typeof filter>, [
-      ...defaultPopulate,
-      ...populate,
-    ], { "createdAt": "DESC" }, limit, offset);
+    return em.find(
+      Wishlist,
+      filter as Required<typeof filter>,
+      [...defaultPopulate, ...populate],
+      { createdAt: "DESC" },
+      limit,
+      offset,
+    );
   }
 
   public async buildWishlistRo(

@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule, Params as PinoOptions } from "nestjs-pino";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { AwsSdkModule } from "nest-aws-sdk";
 
 import { SharedModule } from "./modules/shared/shared.module";
 import { UserModule } from "./modules/user/user.module";
@@ -10,6 +11,7 @@ import { SchedulerModule } from "./modules/scheduler/scheduler.module";
 import { ConfigService } from "./modules/shared/services";
 import { WishlistModule } from "./modules/wishlist/wishlist.module";
 import { NotificationModule } from "./modules/notification/notification.module";
+import { FileModule } from "./modules/file/file.module";
 
 @Module({
   imports: [
@@ -19,8 +21,24 @@ import { NotificationModule } from "./modules/notification/notification.module";
     WishlistModule,
     SchedulerModule,
     NotificationModule,
+    FileModule,
     ScheduleModule.forRoot(),
     MikroOrmModule.forRoot(),
+    AwsSdkModule.forRootAsync({
+      defaultServiceOptions: {
+        imports: [SharedModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          credentials: {
+            accessKeyId: configService.get("MINIO_ACCESS_KEY"),
+            secretAccessKey: configService.get("MINIO_SECRET_KEY"),
+          },
+          endpoint: configService.get("MINIO_ENDPOINT"),
+          s3ForcePathStyle: true,
+          signatureVersion: "v4",
+        }),
+      },
+    }),
     LoggerModule.forRootAsync({
       imports: [SharedModule],
       inject: [ConfigService],
