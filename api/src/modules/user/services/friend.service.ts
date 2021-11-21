@@ -1,9 +1,20 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
 import { Friend, FriendRequest, User } from "../entities";
-import { FriendRequestRo, FriendRequestRoOptions, FriendRo, FriendRoOptions } from "../interfaces";
+import {
+  FriendRequestRo,
+  FriendRequestRoOptions,
+  FriendRo,
+  FriendRoOptions,
+} from "../interfaces";
 import { UserService } from "./user.service";
 import { Mutable } from "../../shared/types";
 import { FriendRequestStatus } from "../constants/enums";
@@ -14,14 +25,22 @@ export class FriendService {
   constructor(
     protected readonly _em: EntityManager,
     protected readonly _userService: UserService,
-    @Inject(forwardRef(() => NotificationService)) protected readonly _notificationService: NotificationService,
+    @Inject(forwardRef(() => NotificationService))
+    protected readonly _notificationService: NotificationService,
     @InjectPinoLogger(FriendService.name)
     protected readonly _logger: PinoLogger,
   ) {}
 
-  public async createFriend(em: EntityManager, user: User, to: User): Promise<Friend> {
+  public async createFriend(
+    em: EntityManager,
+    user: User,
+    to: User,
+  ): Promise<Friend> {
     if (user.id === to.id || (await this.isFriends(em, user, to))) {
-      throw new HttpException("Users are friends or user sent himself a request", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "Users are friends or user sent himself a request",
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const friend1 = new Friend(user, to);
@@ -32,11 +51,19 @@ export class FriendService {
     return friend1;
   }
 
-  public async createFriendRequest(em: EntityManager, from: User, to: User): Promise<FriendRequest> {
+  public async createFriendRequest(
+    em: EntityManager,
+    from: User,
+    to: User,
+  ): Promise<FriendRequest> {
     if (
       from.id === to.id ||
       (await this.isFriends(em, from, to)) ||
-      (await em.count(FriendRequest, { from, to, status: FriendRequestStatus.PENDING })) > 0
+      (await em.count(FriendRequest, {
+        from,
+        to,
+        status: FriendRequestStatus.PENDING,
+      })) > 0
     ) {
       throw new HttpException(
         "Users are friends or friend request has already been sent or user sent himself a request",
@@ -48,7 +75,11 @@ export class FriendService {
 
     em.persist(friendRequest);
 
-    await this._notificationService.createIncomingFriendRequestNotification(em, friendRequest, to);
+    await this._notificationService.createIncomingFriendRequestNotification(
+      em,
+      friendRequest,
+      to,
+    );
 
     return friendRequest;
   }
@@ -60,7 +91,10 @@ export class FriendService {
   ): Promise<FriendRequest> {
     const defaultPopulate = ["from", "to"];
 
-    return em.findOneOrFail(FriendRequest, { id: friendRequestId }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(FriendRequest, { id: friendRequestId }, [
+      ...defaultPopulate,
+      ...populate,
+    ]);
   }
 
   public async changeFriendRequestStatus(
@@ -68,10 +102,16 @@ export class FriendService {
     friendRequestId: number,
     newStatus: FriendRequestStatus,
   ): Promise<FriendRequest> {
-    const friendRequest = await this.getFriendRequestByFriendRequestId(em, friendRequestId);
+    const friendRequest = await this.getFriendRequestByFriendRequestId(
+      em,
+      friendRequestId,
+    );
 
     if (friendRequest.status !== FriendRequestStatus.PENDING) {
-      throw new HttpException("Friend request has already been answered", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "Friend request has already been answered",
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     if (newStatus === FriendRequestStatus.ACCEPTED) {
@@ -80,7 +120,11 @@ export class FriendService {
 
     friendRequest.status = newStatus;
 
-    await this._notificationService.createChangedFriendRequestStatusNotification(em, friendRequest, friendRequest.from);
+    await this._notificationService.createChangedFriendRequestStatusNotification(
+      em,
+      friendRequest,
+      friendRequest.from,
+    );
 
     return friendRequest;
   }
@@ -95,11 +139,19 @@ export class FriendService {
     return em.find(Friend, { to: userId }, [...defaultPopulate, ...populate]);
   }
 
-  public async isFriends(em: EntityManager, user1: User | number, user2: User | number): Promise<boolean> {
+  public async isFriends(
+    em: EntityManager,
+    user1: User | number,
+    user2: User | number,
+  ): Promise<boolean> {
     return (await em.count(Friend, { user: user1, to: user2 })) > 0;
   }
 
-  public async buildFriendRo(em: EntityManager, friend: Friend, friendRoOptions?: FriendRoOptions): Promise<FriendRo> {
+  public async buildFriendRo(
+    em: EntityManager,
+    friend: Friend,
+    friendRoOptions?: FriendRoOptions,
+  ): Promise<FriendRo> {
     const populate: Array<string> = ["user"];
 
     if (!!friendRoOptions?.showWhoseFriend) {
@@ -112,7 +164,9 @@ export class FriendService {
       user: await this._userService.buildUserRo(em, friend.user),
     } as Mutable<FriendRo>;
 
-    friendRo.to = !!friendRoOptions?.showWhoseFriend ? await this._userService.buildUserRo(em, friend.to) : undefined;
+    friendRo.to = !!friendRoOptions?.showWhoseFriend
+      ? await this._userService.buildUserRo(em, friend.to)
+      : undefined;
 
     return friendRo;
   }

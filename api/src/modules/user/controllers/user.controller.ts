@@ -24,18 +24,30 @@ import { User } from "../entities";
 @ApiTags("user")
 @Controller()
 export class UserController {
-  constructor(protected readonly _em: EntityManager, protected readonly _userService: UserService) {}
+  constructor(
+    protected readonly _em: EntityManager,
+    protected readonly _userService: UserService,
+  ) {}
 
   @ApiBearerAuth()
   @Get("/user/:userId")
   @UseGuards(AuthGuard())
-  public async getUserByUserId(@Param("userId", ParseIntPipe) userId: number): Promise<{ user: UserRo }> {
+  public async getUserByUserId(
+    @Param("userId", ParseIntPipe) userId: number,
+  ): Promise<{ user: UserRo }> {
     try {
       const user = await this._userService.getUser(this._em, { id: userId });
 
-      return { user: await this._userService.buildUserRo(this._em, user, { numberOfWishlists: true }) };
+      return {
+        user: await this._userService.buildUserRo(this._em, user, {
+          numberOfWishlists: true,
+        }),
+      };
     } catch (error) {
-      throw new HttpException(`User does not exist: id = ${userId}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        `User does not exist: id = ${userId}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -46,7 +58,9 @@ export class UserController {
     @GetUserFromRequest() user: User,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ): Promise<{ user: UserRo }> {
-    const updatedUser = await this._em.transactional((em) => this._userService.updateUser(em, user.id, updateUserDto));
+    const updatedUser = await this._em.transactional((em) =>
+      this._userService.updateUser(em, user.id, updateUserDto),
+    );
 
     return { user: await this._userService.buildUserRo(this._em, updatedUser) };
   }

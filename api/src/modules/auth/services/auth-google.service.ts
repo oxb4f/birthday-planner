@@ -32,8 +32,13 @@ export class AuthGoogleService extends BaseAuthService {
     );
   }
 
-  public async signIn(em: EntityManager, googleAuthTokenDto: GoogleAuthTokenDto): Promise<User> {
-    const tokenInfo = await this._oAuth2Client.getTokenInfo(googleAuthTokenDto.token);
+  public async signIn(
+    em: EntityManager,
+    googleAuthTokenDto: GoogleAuthTokenDto,
+  ): Promise<User> {
+    const tokenInfo = await this._oAuth2Client.getTokenInfo(
+      googleAuthTokenDto.token,
+    );
 
     try {
       return this._userService.getUser(em, { email: tokenInfo.email });

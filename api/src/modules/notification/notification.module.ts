@@ -14,10 +14,18 @@ import { UserModule } from "../user/user.module";
     forwardRef(() => UserModule),
     SharedModule,
     AuthModule,
-    MikroOrmModule.forFeature({ entities: Object.values(notificationEntities) }),
+    MikroOrmModule.forFeature({
+      entities: Object.values(notificationEntities),
+    }),
   ],
   controllers: Object.values(notificationControllers),
-  providers: [...Object.values(notificationServices), ...Object.values(eventsGateways)],
-  exports: [...Object.values(notificationServices), ...Object.values(eventsGateways)],
+  providers: [
+    ...Object.values(notificationServices),
+    ...Object.values(eventsGateways),
+  ],
+  exports: [
+    ...Object.values(notificationServices),
+    ...Object.values(eventsGateways),
+  ],
 })
 export class NotificationModule {}

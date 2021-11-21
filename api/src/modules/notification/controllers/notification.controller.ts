@@ -1,4 +1,10 @@
-import { Controller, Get, Query, UseGuards, ValidationPipe } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  ValidationPipe,
+} from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
@@ -23,14 +29,18 @@ import {
 @ApiTags("notification")
 @Controller()
 export class NotificationController {
-  constructor(protected readonly _em: EntityManager, protected readonly _notificationService: NotificationService) {}
+  constructor(
+    protected readonly _em: EntityManager,
+    protected readonly _notificationService: NotificationService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get("/notifications")
   public async getNotifications(
     @GetUserFromRequest() user: User,
-    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto,
+    @Query(new ValidationPipe({ transform: true }))
+    paginationDto: PaginationDto,
   ): Promise<
     Array<
       | ChangedFriendRequestStatusNotificationRo
@@ -39,7 +49,12 @@ export class NotificationController {
       | NotificationRo
     >
   > {
-    const notifications = await this._notificationService.getNotificationsByUserId(this._em, user.id, paginationDto);
+    const notifications =
+      await this._notificationService.getNotificationsByUserId(
+        this._em,
+        user.id,
+        paginationDto,
+      );
 
     return Promise.all(
       notifications.map(async (notification) => {
@@ -60,7 +75,10 @@ export class NotificationController {
               notification as IncomingFriendRequestNotification,
             );
           default:
-            return this._notificationService.buildNotificationRo(this._em, notification);
+            return this._notificationService.buildNotificationRo(
+              this._em,
+              notification,
+            );
         }
       }),
     );

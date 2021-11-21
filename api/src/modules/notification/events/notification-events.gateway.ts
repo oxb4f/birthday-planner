@@ -19,7 +19,9 @@ import {
 } from "../interfaces";
 
 @WebSocketGateway({ cors: true })
-export class NotificationEventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationEventsGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   protected readonly _server: Server;
 
@@ -29,9 +31,13 @@ export class NotificationEventsGateway implements OnGatewayConnection, OnGateway
 
   async handleConnection(socket: Socket): Promise<void> {
     try {
-      const jwtToken: string = socket.handshake.headers["authorization"].split(" ")[1];
+      const jwtToken: string =
+        socket.handshake.headers["authorization"].split(" ")[1];
 
-      const jwtPayload: JwtPayload = jwt.verify(jwtToken, this._configService.get("JWT_SECRET_KEY")) as JwtPayload;
+      const jwtPayload: JwtPayload = jwt.verify(
+        jwtToken,
+        this._configService.get("JWT_SECRET_KEY"),
+      ) as JwtPayload;
 
       this._users.set(jwtPayload.userId, socket);
     } catch {

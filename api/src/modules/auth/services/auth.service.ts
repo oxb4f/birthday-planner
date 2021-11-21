@@ -23,7 +23,10 @@ export class AuthService extends BaseAuthService {
     super(em, jwtService, userService, generatorService, logger);
   }
 
-  public async signUp(em: EntityManager, createUserDto: CreateUserDto): Promise<User> {
+  public async signUp(
+    em: EntityManager,
+    createUserDto: CreateUserDto,
+  ): Promise<User> {
     return this._userService.createUser(em, false, createUserDto);
   }
 
@@ -38,16 +41,34 @@ export class AuthService extends BaseAuthService {
     return this._userService.checkFieldForUniqueness(em, "email", email);
   }
 
-  public async checkUsername(em: EntityManager, username: string): Promise<boolean> {
+  public async checkUsername(
+    em: EntityManager,
+    username: string,
+  ): Promise<boolean> {
     return this._userService.checkFieldForUniqueness(em, "username", username);
   }
 
-  public async checkCredentials(em: EntityManager, credentialsDto: CredentialsDto): Promise<boolean> {
+  public async checkCredentials(
+    em: EntityManager,
+    credentialsDto: CredentialsDto,
+  ): Promise<boolean> {
     for (const key of Object.keys(credentialsDto)) {
-      if (key === "email" && !(await this.checkEmail(em, credentialsDto[key]))) {
-        throw new HttpException(`Email "${credentialsDto[key]}" violates unique constraint`, HttpStatus.BAD_REQUEST);
-      } else if (key === "username" && !(await this.checkUsername(em, credentialsDto[key]))) {
-        throw new HttpException(`Username "${credentialsDto[key]}" violates unique constraint`, HttpStatus.BAD_REQUEST);
+      if (
+        key === "email" &&
+        !(await this.checkEmail(em, credentialsDto[key]))
+      ) {
+        throw new HttpException(
+          `Email "${credentialsDto[key]}" violates unique constraint`,
+          HttpStatus.BAD_REQUEST,
+        );
+      } else if (
+        key === "username" &&
+        !(await this.checkUsername(em, credentialsDto[key]))
+      ) {
+        throw new HttpException(
+          `Username "${credentialsDto[key]}" violates unique constraint`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
 

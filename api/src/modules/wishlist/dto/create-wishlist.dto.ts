@@ -1,4 +1,11 @@
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsOptional, MaxLength, MinLength } from "class-validator";
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 import { ApiExtraModels, ApiProperty } from "@nestjs/swagger";
 
 import { WishlistOptionDto } from "./wishlist-option.dto";

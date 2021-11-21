@@ -1,6 +1,26 @@
 version: "3.4"
 
 services:
+  storage:
+      command: server /data
+      image: minio/minio
+      ports:
+        - 127.0.0.1:9000:9000
+      restart: always
+      networks:
+        - internal
+        - public
+      environment:
+        - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+        - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      volumes:
+        - ../../mounted_volumes/minio:/data:rw,delegated
+      logging:
+        driver: "json-file"
+        options:
+          max-file: "10"
+          max-size: "1m"
+
   nginx:
     build:
       context: ../../.
@@ -64,6 +84,7 @@ services:
       - redis
       - postgres
       - nginx
+      - storage
     environment:
       - NODE_ENV=${NODE_ENV}
       - NODE_PORT=${NODE_PORT}

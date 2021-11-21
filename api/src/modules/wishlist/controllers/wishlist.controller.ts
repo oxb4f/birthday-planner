@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  UseGuards,
+  ValidationPipe,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { AuthGuard } from "@nestjs/passport";
@@ -13,7 +23,10 @@ import { SearchWishlistDto } from "../dto/search-wishlist.dto";
 @ApiTags("wishlist")
 @Controller()
 export class WishlistController {
-  constructor(protected readonly _em: EntityManager, protected readonly _wishlistService: WishlistService) {}
+  constructor(
+    protected readonly _em: EntityManager,
+    protected readonly _wishlistService: WishlistService,
+  ) {}
 
   @ApiBearerAuth()
   @Post("/wishlist")
@@ -26,26 +39,43 @@ export class WishlistController {
       this._wishlistService.createWishlist(em, createWishlistDto, user),
     );
 
-    return { wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist) };
+    return {
+      wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist),
+    };
   }
 
   @Get("/wishlist/:wishlistId")
   public async getWishlistByWishlistId(
     @Param("wishlistId", ParseIntPipe) wishlistId: number,
   ): Promise<{ wishlist: WishlistRo }> {
-    const wishlist = await this._wishlistService.getWishlistByWishlistId(this._em, wishlistId);
+    const wishlist = await this._wishlistService.getWishlist(this._em, {
+      id: wishlistId,
+    });
 
-    return { wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist) };
+    return {
+      wishlist: await this._wishlistService.buildWishlistRo(this._em, wishlist),
+    };
   }
 
   @ApiBearerAuth()
   @Get("/wishlists")
   @UseGuards(AuthGuard())
   public async getWishlists(
-    @Query(new ValidationPipe({ transform: true })) searchWishlistDto: SearchWishlistDto,
+    @Query(new ValidationPipe({ transform: true }))
+    searchWishlistDto: SearchWishlistDto,
   ): Promise<WishlistRo[]> {
-    const wishlists = await this._wishlistService.getWishlists(this._em, searchWishlistDto);
+    const wishlists = await this._wishlistService.getWishlists(
+      this._em,
+      { user: searchWishlistDto.userId as unknown as User },
+      [],
+      searchWishlistDto.offset,
+      searchWishlistDto.limit,
+    );
 
-    return Promise.all(wishlists.map((wishlist) => this._wishlistService.buildWishlistRo(this._em, wishlist)));
+    return Promise.all(
+      wishlists.map((wishlist) =>
+        this._wishlistService.buildWishlistRo(this._em, wishlist),
+      ),
+    );
   }
 }
