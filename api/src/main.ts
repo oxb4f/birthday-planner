@@ -14,7 +14,10 @@ import { INestApplication } from "@nestjs/common";
 const globalPrefix = "api";
 
 function setupSwagger(app: INestApplication): void {
-  const config = new DocumentBuilder().setTitle("The Birthday planner API").setVersion("0.1.0").build();
+  const config = new DocumentBuilder()
+    .setTitle("The Birthday planner API")
+    .setVersion("0.1.0")
+    .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
@@ -29,8 +32,6 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalFilters(new ExceptionsFilter(configService));
   app.useGlobalInterceptors(new ResponseInterceptor());
-
-  // app.enableCors({ origin: true, credentials: true });
 
   app.useLogger(app.get(Logger));
   app.use(helmet());

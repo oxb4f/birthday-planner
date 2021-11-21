@@ -31,7 +31,7 @@ export class UserService {
         (userCreationSchema as CreateUserDto).password,
         (userCreationSchema as CreateUserDto).birthdayDate,
       );
-    } else if (userCreationSchema instanceof CreateUserGoogleDto) {
+    } else {
       user = new User(userCreationSchema.email, true);
     }
 
@@ -40,7 +40,11 @@ export class UserService {
     return user;
   }
 
-  public async checkFieldForUniqueness(em: EntityManager, field: keyof User, value: unknown): Promise<boolean> {
+  public async checkFieldForUniqueness(
+    em: EntityManager,
+    field: keyof User,
+    value: unknown,
+  ): Promise<boolean> {
     return (await em.count(User, { [field]: value })) === 0;
   }
 
@@ -51,23 +55,41 @@ export class UserService {
   ): Promise<User> {
     const defaultPopulate = [];
 
-    return em.findOneOrFail(User, filter as Required<typeof filter>, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(User, filter as Required<typeof filter>, [
+      ...defaultPopulate,
+      ...populate,
+    ]);
   }
 
-  public async updateUser(em: EntityManager, userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+  public async updateUser(
+    em: EntityManager,
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     const user = await this.getUser(em, { id: userId });
 
     if (
       updateUserDto.username !== undefined &&
-      !(await this.checkFieldForUniqueness(em, "username", updateUserDto.username))
+      !(await this.checkFieldForUniqueness(
+        em,
+        "username",
+        updateUserDto.username,
+      ))
     ) {
-      throw new HttpException("Username already belongs to the user", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "Username already belongs to the user",
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return wrap(user).assign(updateUserDto, { mergeObjects: true });
   }
 
-  public async buildUserRo(em: EntityManager, user: User, options?: UserRoOptions): Promise<UserRo> {
+  public async buildUserRo(
+    em: EntityManager,
+    user: User,
+    options?: UserRoOptions,
+  ): Promise<UserRo> {
     const userRo = {
       userId: user.id,
       username: user.username,
@@ -87,7 +109,9 @@ export class UserService {
       await em.populate(user, populate);
     }
 
-    userRo.numberOfWishlists = !!options?.numberOfWishlists ? user.wishlists.length : undefined;
+    userRo.numberOfWishlists = !!options?.numberOfWishlists
+      ? user.wishlists.length
+      : undefined;
 
     return userRo;
   }

@@ -20,7 +20,11 @@ export abstract class BaseAuthService {
   abstract signUp(...args: unknown[]): Promise<User>;
   abstract signIn(...args: unknown[]): Promise<User>;
 
-  public async generateRefreshToken(em: EntityManager, expirationTime: number, user: User): Promise<RefreshToken> {
+  public async generateRefreshToken(
+    em: EntityManager,
+    expirationTime: number,
+    user: User,
+  ): Promise<RefreshToken> {
     let payload: string;
     do {
       payload = this._generatorService.randomHex(32);
@@ -40,7 +44,10 @@ export abstract class BaseAuthService {
   ): Promise<RefreshToken> {
     const defaultPopulate = ["user"];
 
-    return em.findOneOrFail(RefreshToken, { payload: refreshTokenPayload }, [...defaultPopulate, ...populate]);
+    return em.findOneOrFail(RefreshToken, { payload: refreshTokenPayload }, [
+      ...defaultPopulate,
+      ...populate,
+    ]);
   }
 
   public async refresh(
@@ -48,7 +55,10 @@ export abstract class BaseAuthService {
     refreshTokenPayload: string,
     newRefreshTokenExpirationTime: number,
   ): Promise<RefreshToken> {
-    const refreshToken = await this.getRefreshTokenByRefreshTokenPayload(em, refreshTokenPayload);
+    const refreshToken = await this.getRefreshTokenByRefreshTokenPayload(
+      em,
+      refreshTokenPayload,
+    );
 
     const { user } = refreshToken;
 
@@ -61,7 +71,11 @@ export abstract class BaseAuthService {
     return this._jwtService.sign(payload);
   }
 
-  public async buildAuthRo(em: EntityManager, jwtTokens: JwtTokens, user: User): Promise<AuthRo> {
+  public async buildAuthRo(
+    em: EntityManager,
+    jwtTokens: JwtTokens,
+    user: User,
+  ): Promise<AuthRo> {
     return {
       tokens: jwtTokens,
       user: await this._userService.buildUserRo(em, user),

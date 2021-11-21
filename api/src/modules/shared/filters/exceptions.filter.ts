@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from "@nestjs/common";
 
 import { ConfigService } from "../services";
 import * as ErrorStackParser from "error-stack-parser";
@@ -11,9 +17,15 @@ export class ExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
-    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const apiResponse: { statusCode: number; error?: { details?: unknown; stack?: Array<string> } } = {
+    const apiResponse: {
+      statusCode: number;
+      error?: { details?: unknown; stack?: Array<string> };
+    } = {
       statusCode: status,
     };
 

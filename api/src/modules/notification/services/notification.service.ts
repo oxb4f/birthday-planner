@@ -27,7 +27,8 @@ export class NotificationService {
     protected readonly _em: EntityManager,
     protected readonly _userService: UserService,
     protected readonly _notificationEventsGateway: NotificationEventsGateway,
-    @Inject(forwardRef(() => FriendService)) protected readonly _friendService: FriendService,
+    @Inject(forwardRef(() => FriendService))
+    protected readonly _friendService: FriendService,
     @InjectPinoLogger(NotificationService.name)
     protected readonly _logger: PinoLogger,
   ) {}
@@ -37,7 +38,8 @@ export class NotificationService {
     friendRequest: FriendRequest,
     to: User,
   ): Promise<ChangedFriendRequestStatusNotification> {
-    const changedFriendRequestStatusNotification = new ChangedFriendRequestStatusNotification(friendRequest, to);
+    const changedFriendRequestStatusNotification =
+      new ChangedFriendRequestStatusNotification(friendRequest, to);
 
     await em.persistAndFlush(changedFriendRequestStatusNotification);
 
@@ -45,7 +47,10 @@ export class NotificationService {
       .emitNewNotification(
         NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
         to.id,
-        await this.buildChangedFriendRequestStatusNotificationRo(em, changedFriendRequestStatusNotification),
+        await this.buildChangedFriendRequestStatusNotificationRo(
+          em,
+          changedFriendRequestStatusNotification,
+        ),
       )
       .catch(this._logger.error.bind(this._logger));
 
@@ -57,7 +62,8 @@ export class NotificationService {
     friendRequest: FriendRequest,
     to: User,
   ): Promise<IncomingFriendRequestNotification> {
-    const incomingFriendRequestNotification = new IncomingFriendRequestNotification(friendRequest, to);
+    const incomingFriendRequestNotification =
+      new IncomingFriendRequestNotification(friendRequest, to);
 
     await em.persistAndFlush(incomingFriendRequestNotification);
 
@@ -65,7 +71,10 @@ export class NotificationService {
       .emitNewNotification(
         NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
         to.id,
-        await this.buildChangedFriendRequestStatusNotificationRo(em, incomingFriendRequestNotification),
+        await this.buildChangedFriendRequestStatusNotificationRo(
+          em,
+          incomingFriendRequestNotification,
+        ),
       )
       .catch(this._logger.error.bind(this._logger));
 
@@ -89,7 +98,10 @@ export class NotificationService {
     userId: number,
     paginationDto?: PaginationDto,
   ): Promise<Notification[]> {
-    const [offset, limit] = [paginationDto?.offset ?? 0, paginationDto?.limit ?? 15];
+    const [offset, limit] = [
+      paginationDto?.offset ?? 0,
+      paginationDto?.limit ?? 15,
+    ];
 
     const notificationsQuery = em
       .createQueryBuilder(Notification, "n")
@@ -108,8 +120,14 @@ export class NotificationService {
                 "fr.status": FriendRequestStatus.PENDING,
               },
               {
-                "n.type": NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
-                "fr.status": { $in: [FriendRequestStatus.ACCEPTED, FriendRequestStatus.REJECTED] },
+                "n.type":
+                  NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
+                "fr.status": {
+                  $in: [
+                    FriendRequestStatus.ACCEPTED,
+                    FriendRequestStatus.REJECTED,
+                  ],
+                },
               },
             ],
           },
@@ -122,7 +140,10 @@ export class NotificationService {
     return notificationsQuery.getResult();
   }
 
-  public async buildNotificationRo(em: EntityManager, notification: Notification): Promise<NotificationRo> {
+  public async buildNotificationRo(
+    em: EntityManager,
+    notification: Notification,
+  ): Promise<NotificationRo> {
     await em.populate(notification, ["to"]);
 
     return {
@@ -137,10 +158,16 @@ export class NotificationService {
     em: EntityManager,
     changedFriendRequestStatusNotification: ChangedFriendRequestStatusNotification,
   ): Promise<ChangedFriendRequestStatusNotificationRo> {
-    await em.populate(changedFriendRequestStatusNotification, ["friendRequest", "to"]);
+    await em.populate(changedFriendRequestStatusNotification, [
+      "friendRequest",
+      "to",
+    ]);
 
     return {
-      ...(await this.buildNotificationRo(em, changedFriendRequestStatusNotification)),
+      ...(await this.buildNotificationRo(
+        em,
+        changedFriendRequestStatusNotification,
+      )),
 
       friendRequest: await this._friendService.buildFriendRequestRo(
         em,
@@ -154,10 +181,16 @@ export class NotificationService {
     em: EntityManager,
     incomingFriendRequestNotification: IncomingFriendRequestNotification,
   ): Promise<IncomingFriendRequestNotificationRo> {
-    await em.populate(incomingFriendRequestNotification, ["friendRequest", "to"]);
+    await em.populate(incomingFriendRequestNotification, [
+      "friendRequest",
+      "to",
+    ]);
 
     return {
-      ...(await this.buildNotificationRo(em, incomingFriendRequestNotification)),
+      ...(await this.buildNotificationRo(
+        em,
+        incomingFriendRequestNotification,
+      )),
 
       friendRequest: await this._friendService.buildFriendRequestRo(
         em,
@@ -175,7 +208,10 @@ export class NotificationService {
     return {
       ...(await this.buildNotificationRo(em, friendBirthdayNotification)),
 
-      user: await this._userService.buildUserRo(em, friendBirthdayNotification.user),
+      user: await this._userService.buildUserRo(
+        em,
+        friendBirthdayNotification.user,
+      ),
     } as FriendBirthdayNotificationRo;
   }
 }

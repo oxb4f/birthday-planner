@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import * as jwt from "jsonwebtoken";
 
 import { UserService } from "../../user/services";
@@ -19,11 +24,18 @@ export class WsJwtGuard implements CanActivate {
     const client = context.switchToWs().getClient();
 
     try {
-      const jwtToken: string = client.handshake.headers["authorization"].split(" ")[1];
+      const jwtToken: string =
+        client.handshake.headers["authorization"].split(" ")[1];
 
-      const jwtPayload: JwtPayload = jwt.verify(jwtToken, this._configService.get("JWT_SECRET_KEY")) as JwtPayload;
+      const jwtPayload: JwtPayload = jwt.verify(
+        jwtToken,
+        this._configService.get("JWT_SECRET_KEY"),
+      ) as JwtPayload;
 
-      context.switchToWs().getData().user = await this._userService.getUser(this._em, { id: jwtPayload.userId });
+      context.switchToWs().getData().user = await this._userService.getUser(
+        this._em,
+        { id: jwtPayload.userId },
+      );
 
       return true;
     } catch {

@@ -24,12 +24,18 @@ import { NotificationModule } from "./modules/notification/notification.module";
     LoggerModule.forRootAsync({
       imports: [SharedModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService): Promise<PinoOptions> => {
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<PinoOptions> => {
         return {
           pinoHttp: configService.isDevelopment()
             ? {
                 level: "debug",
-                prettyPrint: { colorize: true, leverFirst: true, translateTime: "UTC:mm/dd/yyyy" },
+                prettyPrint: {
+                  colorize: true,
+                  leverFirst: true,
+                  translateTime: "UTC:mm/dd/yyyy",
+                },
               }
             : {},
         } as PinoOptions;

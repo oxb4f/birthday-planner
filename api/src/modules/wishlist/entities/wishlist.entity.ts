@@ -1,4 +1,11 @@
-import { Collection, Entity, Index, ManyToOne, OneToMany, Property } from "mikro-orm";
+import {
+  Collection,
+  Entity,
+  Index,
+  ManyToOne,
+  OneToMany,
+  Property,
+} from "mikro-orm";
 
 import { BaseEntity } from "../../shared/entities";
 import { User } from "../../user/entities";

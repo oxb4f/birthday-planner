@@ -5,7 +5,8 @@ import { FriendRequest, User } from "../../user/entities";
 import { NotificationType } from "../constants/enums";
 
 @Entity({
-  discriminatorValue: NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
+  discriminatorValue:
+    NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
 })
 export class ChangedFriendRequestStatusNotification extends Notification {
   @ManyToOne({ onDelete: "cascade" })

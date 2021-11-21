@@ -10,7 +10,11 @@ export class ConfigService {
 
   constructor() {
     this._nodeEnv = process.env["NODE_ENV"] ?? "dev";
-    this._envConfig = parseEnvFile(readFileSync(findConfig(".env", { dir: `env/${this._nodeEnv}`, dot: true })));
+    this._envConfig = parseEnvFile(
+      readFileSync(
+        findConfig(".env", { dir: `env/${this._nodeEnv}`, dot: true }),
+      ),
+    );
   }
 
   public get env(): string {

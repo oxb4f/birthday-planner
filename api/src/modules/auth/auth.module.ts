@@ -25,12 +25,18 @@ import { SharedModule } from "../shared/shared.module";
         },
       }),
     }),
-    MikroOrmModule.forFeature({ entities: [...Object.values(authEntities), User] }),
+    MikroOrmModule.forFeature({
+      entities: [...Object.values(authEntities), User],
+    }),
     forwardRef(() => UserModule),
     PassportModule.register({ defaultStrategy: "jwt" }),
   ],
   providers: [...Object.values(authServices), ...Object.values(authStrategies)],
   controllers: Object.values(authControllers),
-  exports: [...Object.values(authServices), ...Object.values(authStrategies), PassportModule],
+  exports: [
+    ...Object.values(authServices),
+    ...Object.values(authStrategies),
+    PassportModule,
+  ],
 })
 export class AuthModule {}

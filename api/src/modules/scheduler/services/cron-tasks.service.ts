@@ -19,7 +19,11 @@ export class CronTasksService {
 
     const now = Math.floor(Date.now() / 1000);
 
-    const expiredRefreshTokens = await this._em.find(RefreshToken, { expiresAt: { $lte: now } }, { limit: 100 });
+    const expiredRefreshTokens = await this._em.find(
+      RefreshToken,
+      { expiresAt: { $lte: now } },
+      { limit: 100 },
+    );
 
     await this._em.removeAndFlush(expiredRefreshTokens);
 
