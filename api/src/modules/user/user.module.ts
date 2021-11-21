@@ -1,5 +1,7 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { S3 } from "aws-sdk";
+import { AwsSdkModule } from "nest-aws-sdk";
 
 import * as userServices from "./services";
 import * as userControllers from "./controllers";
@@ -10,6 +12,7 @@ import { NotificationModule } from "../notification/notification.module";
 
 @Module({
   imports: [
+    AwsSdkModule.forFeatures([S3]),
     forwardRef(() => NotificationModule),
     SharedModule,
     AuthModule,

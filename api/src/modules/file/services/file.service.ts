@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, OnModuleInit } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 import { S3 } from "aws-sdk";
 import { from, defer, Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
@@ -8,16 +8,11 @@ import { Response } from "express";
 
 import { S3BucketConfig, DownloadFileOptions } from "../interfaces";
 
-@Injectable()
-export abstract class FileService implements OnModuleInit {
+export abstract class FileService {
   protected constructor(
     protected readonly _s3: S3,
     protected readonly _s3Config: Array<S3BucketConfig>,
   ) {}
-
-  public onModuleInit(): void {
-    this._initBuckets(this._s3Config);
-  }
 
   protected _initBuckets(buckets: Array<S3BucketConfig>): void {
     defer(() => this._s3.listBuckets().promise()).subscribe(
