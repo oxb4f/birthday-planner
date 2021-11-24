@@ -14,20 +14,20 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(5)
   @MaxLength(25)
-  public readonly username: string;
+  public readonly username!: string;
 
   @ApiProperty()
   @MinLength(8)
   @MaxLength(32)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
-  public readonly password: string;
+  public readonly password!: string;
 
   @ApiProperty()
   @IsEmail()
-  public readonly email: string;
+  public readonly email!: string;
 
   @ApiProperty()
   @IsInt()
   @Min(1)
-  public readonly birthdayDate: number;
+  public readonly birthdayDate!: number;
 }

@@ -55,7 +55,7 @@ export class AuthService extends BaseAuthService {
     for (const key of Object.keys(credentialsDto)) {
       if (
         key === "email" &&
-        !(await this.checkEmail(em, credentialsDto[key]))
+        !(await this.checkEmail(em, credentialsDto[key] as string))
       ) {
         throw new HttpException(
           `Email "${credentialsDto[key]}" violates unique constraint`,
@@ -63,7 +63,7 @@ export class AuthService extends BaseAuthService {
         );
       } else if (
         key === "username" &&
-        !(await this.checkUsername(em, credentialsDto[key]))
+        !(await this.checkUsername(em, credentialsDto[key] as string))
       ) {
         throw new HttpException(
           `Username "${credentialsDto[key]}" violates unique constraint`,

@@ -51,7 +51,7 @@ export class AuthController {
     const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({
         userId: user.id,
-        username: user.username,
+        username: user.username || undefined,
       }),
       refreshToken: refreshToken.payload,
     };
@@ -77,7 +77,7 @@ export class AuthController {
     const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({
         userId: user.id,
-        username: user.username,
+        username: user.username || undefined,
       }),
       refreshToken: refreshToken.payload,
     };
@@ -103,7 +103,7 @@ export class AuthController {
     const tokens: JwtTokens = {
       accessToken: this._authService.generateJwtAccessToken({
         userId: user.id,
-        username: user.username,
+        username: user.username || undefined,
       }),
       refreshToken: refreshToken.payload,
     };

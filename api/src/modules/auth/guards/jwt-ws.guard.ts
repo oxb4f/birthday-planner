@@ -1,7 +1,6 @@
 import {
   CanActivate,
   ExecutionContext,
-  HttpStatus,
   Injectable,
 } from "@nestjs/common";
 import * as jwt from "jsonwebtoken";

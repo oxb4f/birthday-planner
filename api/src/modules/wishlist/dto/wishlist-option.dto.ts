@@ -6,5 +6,5 @@ export class WishlistOptionDto {
   @IsNotEmpty()
   @MinLength(5)
   @MaxLength(128)
-  public readonly text: string;
+  public readonly text!: string;
 }

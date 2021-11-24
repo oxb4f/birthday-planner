@@ -18,7 +18,7 @@ export class User extends BaseEntity {
   public readonly email: string;
 
   @Property({ nullable: true })
-  public readonly avatar: string | null;
+  public readonly avatar: string | null = null;
 
   @Property()
   public readonly registeredUsingGoogle: boolean;
@@ -48,7 +48,7 @@ export class User extends BaseEntity {
 
     this.email = email;
     this.username = username;
-    this.password = User.passwordHash(password);
+    this.password = password ? User.passwordHash(password) : null;
     this.birthdayDate = birthdayDate;
     this.registeredUsingGoogle = registeredUsingGoogle;
     this.firstName = firstName;
