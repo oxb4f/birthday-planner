@@ -22,5 +22,5 @@ export class CreateWishlistDto {
   @ApiProperty({ type: [WishlistOptionDto], required: true })
   @IsArray()
   @ArrayNotEmpty()
-  public readonly options: ReadonlyArray<WishlistOptionDto>;
+  public readonly options!: ReadonlyArray<WishlistOptionDto>;
 }

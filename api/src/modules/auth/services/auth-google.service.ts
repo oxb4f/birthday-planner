@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { OAuth2Client } from "google-auth-library";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { JwtService } from "@nestjs/jwt";
@@ -43,6 +43,9 @@ export class AuthGoogleService extends BaseAuthService {
     try {
       return this._userService.getUser(em, { email: tokenInfo.email });
     } catch (error) {
+      if (!tokenInfo.email) {
+        throw new HttpException("Cannot get user email", HttpStatus.BAD_GATEWAY);
+      }
       return this.signUp(em, tokenInfo.email);
     }
   }

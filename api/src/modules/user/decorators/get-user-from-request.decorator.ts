@@ -7,7 +7,7 @@ import {
 import { User } from "../entities";
 
 export const GetUserFromRequest = createParamDecorator(
-  (data: string, ctx: ExecutionContext): User => {
+  (data: string, ctx: ExecutionContext): any => {
     let user: User;
     switch (ctx.getType()) {
       case "http":
@@ -23,6 +23,6 @@ export const GetUserFromRequest = createParamDecorator(
         );
     }
 
-    return data ? user[data] : user;
+    return data ? (user as any)[data] : user;
   },
 );

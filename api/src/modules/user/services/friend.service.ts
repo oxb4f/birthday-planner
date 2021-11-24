@@ -19,6 +19,7 @@ import { UserService } from "./user.service";
 import { Mutable } from "../../shared/types";
 import { FriendRequestStatus } from "../constants/enums";
 import { NotificationService } from "../../notification/services";
+import { FilterQuery } from "@mikro-orm/core";
 
 @Injectable()
 export class FriendService {
@@ -84,14 +85,14 @@ export class FriendService {
     return friendRequest;
   }
 
-  public async getFriendRequestByFriendRequestId(
+  public async getFriendRequest(
     em: EntityManager,
-    friendRequestId: number,
+    filter: FilterQuery<FriendRequest>,
     populate: Array<string> = [],
   ): Promise<FriendRequest> {
     const defaultPopulate = ["from", "to"];
 
-    return em.findOneOrFail(FriendRequest, { id: friendRequestId }, [
+    return em.findOneOrFail(FriendRequest, filter, [
       ...defaultPopulate,
       ...populate,
     ]);
@@ -102,10 +103,9 @@ export class FriendService {
     friendRequestId: number,
     newStatus: FriendRequestStatus,
   ): Promise<FriendRequest> {
-    const friendRequest = await this.getFriendRequestByFriendRequestId(
-      em,
-      friendRequestId,
-    );
+    const friendRequest = await this.getFriendRequest(em, {
+      id: friendRequestId,
+    });
 
     if (friendRequest.status !== FriendRequestStatus.PENDING) {
       throw new HttpException(

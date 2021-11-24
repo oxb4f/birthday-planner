@@ -12,7 +12,7 @@ export class ConfigService {
     this._nodeEnv = process.env["NODE_ENV"] ?? "dev";
     this._envConfig = parseEnvFile(
       readFileSync(
-        findConfig(".env", { dir: `env/${this._nodeEnv}`, dot: true }),
+        findConfig(".env", { dir: `env/${this._nodeEnv}`, dot: true }) as string,
       ),
     );
   }

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { EntityManager } from "@mikro-orm/postgresql";
+import { FilterQuery } from "@mikro-orm/core";
 import { wrap } from "mikro-orm";
 
 import { User } from "../entities";
@@ -50,15 +51,12 @@ export class UserService {
 
   public async getUser(
     em: EntityManager,
-    filter: { [Prop in keyof User]+?: User[Prop] },
+    filter: FilterQuery<User>,
     populate: Array<string> = [],
   ): Promise<User> {
-    const defaultPopulate = [];
+    const defaultPopulate: Array<string> = [];
 
-    return em.findOneOrFail(User, filter as Required<typeof filter>, [
-      ...defaultPopulate,
-      ...populate,
-    ]);
+    return em.findOneOrFail(User, filter, [...defaultPopulate, ...populate]);
   }
 
   public async updateUser(
@@ -82,7 +80,7 @@ export class UserService {
       );
     }
 
-    return wrap(user).assign(updateUserDto, { mergeObjects: true });
+    return wrap(user).assign(updateUserDto, { mergeObjects: true, em });
   }
 
   public async buildUserRo(
@@ -97,6 +95,7 @@ export class UserService {
       firstName: user.firstName,
       lastName: user.lastName,
       birthdayDate: user.birthdayDate,
+      avatar: user.avatar,
     } as Mutable<UserRo>;
 
     const populate: Array<string> = [];

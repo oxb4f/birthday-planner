@@ -23,7 +23,7 @@ export class NotificationEventsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
-  protected readonly _server: Server;
+  protected readonly _server!: Server;
 
   protected readonly _users: Map<number, Socket> = new Map<number, Socket>();
 
@@ -31,11 +31,11 @@ export class NotificationEventsGateway
 
   async handleConnection(socket: Socket): Promise<void> {
     try {
-      const jwtToken: string =
-        socket.handshake.headers["authorization"].split(" ")[1];
+      const jwtToken: string | undefined =
+        socket.handshake.headers["authorization"]?.split(" ")[1];
 
       const jwtPayload: JwtPayload = jwt.verify(
-        jwtToken,
+        jwtToken as string,
         this._configService.get("JWT_SECRET_KEY"),
       ) as JwtPayload;
 

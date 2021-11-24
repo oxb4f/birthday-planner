@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { EntityManager, QueryBuilder } from "@mikro-orm/postgresql";
+import { FilterQuery } from "@mikro-orm/core";
+import { EntityManager } from "@mikro-orm/postgresql";
 
 import { CreateWishlistDto } from "../dto";
 import { User } from "../../user/entities";
@@ -40,12 +41,12 @@ export class WishlistService {
 
   public async getWishlist(
     em: EntityManager,
-    filter: { [Prop in keyof Wishlist]+?: Wishlist[Prop] },
+    filter: FilterQuery<Wishlist>,
     populate: Array<string> = [],
   ): Promise<Wishlist> {
     const defaultPopulate = ["options", "user"];
 
-    return em.findOneOrFail(Wishlist, filter as Required<typeof filter>, [
+    return em.findOneOrFail(Wishlist, filter, [
       ...defaultPopulate,
       ...populate,
     ]);
@@ -53,7 +54,7 @@ export class WishlistService {
 
   public async getWishlists(
     em: EntityManager,
-    filter: { [Prop in keyof Wishlist]+?: Wishlist[Prop] },
+    filter: FilterQuery<Wishlist>,
     populate: Array<string> = [],
     offset = 0,
     limit = 15,
@@ -62,7 +63,7 @@ export class WishlistService {
 
     return em.find(
       Wishlist,
-      filter as Required<typeof filter>,
+      filter,
       [...defaultPopulate, ...populate],
       { createdAt: "DESC" },
       limit,

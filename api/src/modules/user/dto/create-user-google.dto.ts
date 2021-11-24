@@ -1,4 +1,4 @@
-import { IsEmail, validate } from "class-validator";
+import { IsEmail } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateUserGoogleDto {

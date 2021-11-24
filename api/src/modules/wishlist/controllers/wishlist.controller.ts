@@ -66,7 +66,7 @@ export class WishlistController {
   ): Promise<WishlistRo[]> {
     const wishlists = await this._wishlistService.getWishlists(
       this._em,
-      { user: searchWishlistDto.userId as unknown as User },
+      { user: searchWishlistDto.userId },
       [],
       searchWishlistDto.offset,
       searchWishlistDto.limit,
