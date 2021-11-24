@@ -12,11 +12,11 @@ dotenv.config({
 
 const config = {
   type: "postgresql",
-  host: process.env["POSTGREG_DB_HOST"],
-  port: parseInt(process.env["POSTGREG_DB_PORT"] as string),
+  host: process.env["POSTGRES_DB_HOST"],
+  port: parseInt(process.env["POSTGRES_DB_PORT"] as string),
   user: process.env["POSTGRES_DB_USER"],
   password: process.env["POSTGRES_DB_PASSWORD"],
-  dbName: process.env["POSTGREG_DB_NAME"],
+  dbName: process.env["POSTGRES_DB_NAME"],
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
   debug: env === "dev",

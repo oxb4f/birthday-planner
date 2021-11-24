@@ -44,8 +44,9 @@ export class AuthGoogleService extends BaseAuthService {
       return this._userService.getUser(em, { email: tokenInfo.email });
     } catch (error) {
       if (!tokenInfo.email) {
-        throw new HttpException("Cannot get user email", HttpStatus.BAD_GATEWAY);
+        throw new HttpException("Cannot get user email", HttpStatus.BAD_REQUEST);
       }
+      
       return this.signUp(em, tokenInfo.email);
     }
   }

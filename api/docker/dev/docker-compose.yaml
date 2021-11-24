@@ -88,9 +88,11 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - NODE_PORT=${NODE_PORT}
-      - POSTGREG_DB_NAME=${POSTGREG_DB_NAME}
+      - POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
       - POSTGRES_DB_USER=${POSTGRES_DB_USER}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_DB_PORT=${POSTGRES_DB_PORT}
+      - POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
       - APP_PUBLIC_URL=${APP_PUBLIC_URL}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
@@ -112,7 +114,7 @@ services:
       - ../../mounted_volumes/postgres/:/var/lib/postgresql/data/:rw,delegated
     restart: always
     environment:
-      - POSTGRES_DB=${POSTGREG_DB_NAME}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
       - POSTGRES_USER=${POSTGRES_DB_USER}
       - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
     networks:

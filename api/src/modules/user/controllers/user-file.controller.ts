@@ -15,7 +15,7 @@ import { UserFileService, UserService } from "../services";
 import { GetUserFromRequest } from "../decorators";
 import { User } from "../entities/user.entity";
 import { UserRo } from "../interfaces";
-import { FileController } from "src/modules/file/controllers";
+import { FileController } from "../../file/controllers";
 
 @ApiTags("user")
 @Controller()

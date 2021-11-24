@@ -3,13 +3,13 @@ import {
   ExecutionContext,
   Injectable,
 } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
+import { EntityManager } from "@mikro-orm/postgresql";
 import * as jwt from "jsonwebtoken";
 
 import { UserService } from "../../user/services";
 import { JwtPayload } from "../interfaces";
 import { ConfigService } from "../../shared/services";
-import { EntityManager } from "@mikro-orm/postgresql";
-import { WsException } from "@nestjs/websockets";
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
