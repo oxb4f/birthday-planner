@@ -1,7 +1,10 @@
 FROM node:lts-alpine
 
 ENV PROJECT_PATH=/opt/api/
-ENV NODE_ENV=$NODE_ENV
+
+ARG NODE_ENV
+
+ENV NODE_ENV=${NODE_ENV}
 
 RUN apk add --update \
     curl \
@@ -13,7 +16,7 @@ WORKDIR $PROJECT_PATH
 
 COPY ./*.js $PROJECT_PATH
 COPY ./*.json $PROJECT_PATH
-COPY ./env/dev/.env $PROJECT_PATH
+COPY ./env/.env $PROJECT_PATH
 COPY ./test $PROJECT_PATH/test
 COPY ./src $PROJECT_PATH/src
 
