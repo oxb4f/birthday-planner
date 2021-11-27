@@ -68,6 +68,8 @@ services:
       context: ../../.
       dockerfile: ./docker/dev/app/Dockerfile
       network: host
+      args:
+        NODE_ENV: ${NODE_ENV}
     command: [
         "npm", "run", "start:debug"
     ]

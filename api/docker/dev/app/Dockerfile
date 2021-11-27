@@ -1,7 +1,10 @@
 FROM node:lts-alpine
 
 ENV PROJECT_PATH=/opt/api/
-ENV NODE_ENV=$NODE_ENV
+
+ARG NODE_ENV
+
+ENV NODE_ENV=${NODE_ENV}
 
 RUN apk add --update \
     curl \
