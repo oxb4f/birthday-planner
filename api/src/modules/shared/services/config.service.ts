@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { parse as parseEnvFile } from "dotenv";
 import { readFileSync } from "fs";
-import * as findConfig from "find-config";
+import { join } from "path";
 
 @Injectable()
 export class ConfigService {
@@ -12,7 +12,7 @@ export class ConfigService {
     this._nodeEnv = process.env["NODE_ENV"] ?? "dev";
     this._envConfig = parseEnvFile(
       readFileSync(
-        findConfig(".env", { dir: `env/${this._nodeEnv}`, dot: true }) as string,
+        join(process.cwd(), "env/.env"),
       ),
     );
   }
