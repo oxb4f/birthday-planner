@@ -58,7 +58,7 @@ export class WishlistService {
     populate: Array<string> = [],
     offset = 0,
     limit = 15,
-  ): Promise<Wishlist[]> {
+  ): Promise<Array<Wishlist>> {
     const defaultPopulate = ["options", "user"];
 
     return em.find(

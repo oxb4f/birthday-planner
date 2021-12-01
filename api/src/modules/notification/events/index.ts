@@ -1,1 +1,1 @@
-export * from "./notification-events.gateway";
+export * from "./notification-event.gateway";

@@ -13,9 +13,7 @@ export class ConfigService {
 
     const envPath = this._nodeEnv === "dev" ? "env/.env" : ".env";
 
-    this._envConfig = parseEnvFile(
-      readFileSync(join(process.cwd(), envPath)),
-    );
+    this._envConfig = parseEnvFile(readFileSync(join(process.cwd(), envPath)));
   }
 
   public get env(): string {
