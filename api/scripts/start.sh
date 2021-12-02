@@ -1,7 +1,15 @@
 #!/bin/bash
 
-_ENV=$1
+run_from=$(pwd)
+script_location="${run_from}${BASH_SOURCE[0]:1}"
+cd "$(dirname $script_location)" && cd ..
 
-sort -u -t '=' -k 1,1 env/local/.env env/"$_ENV"/.env | grep -v '^$\|^\s*\#' > env/.env
+source ./scripts/boot.sh
 
-docker-compose --env-file env/.env -f docker/"$_ENV"/docker-compose.yaml -p api up --build -d
+dockerize() {
+    sudo docker-compose --env-file "$PATH_TO_MAIN_ENV" -f docker/"$RUNNING_ENV"/docker-compose.yaml -p "$PROJECT_NAME" up --build -d
+}
+
+dockerize
+
+cd "$run_from" || exit

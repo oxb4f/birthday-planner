@@ -1,8 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
 import { EntityManager } from "@mikro-orm/postgresql";
 import * as jwt from "jsonwebtoken";

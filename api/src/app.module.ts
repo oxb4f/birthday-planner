@@ -12,6 +12,7 @@ import { ConfigService } from "./modules/shared/services";
 import { WishlistModule } from "./modules/wishlist/wishlist.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { FileModule } from "./modules/file/file.module";
+import { RoomModule } from "./modules/room/room.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FileModule } from "./modules/file/file.module";
     SchedulerModule,
     NotificationModule,
     FileModule,
+    RoomModule,
     ScheduleModule.forRoot(),
     MikroOrmModule.forRoot(),
     AwsSdkModule.forRootAsync({
