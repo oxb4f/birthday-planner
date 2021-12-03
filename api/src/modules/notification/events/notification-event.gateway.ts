@@ -25,9 +25,11 @@ export class NotificationEventsGateway
   @WebSocketServer()
   protected readonly _server!: Server;
 
-  protected readonly _users: Map<number, Socket> = new Map<number, Socket>();
+  protected readonly _users!: Map<number, Socket>;
 
-  constructor(protected readonly _configService: ConfigService) {}
+  constructor(protected readonly _configService: ConfigService) {
+    this._users = new Map<number, Socket>();
+  }
 
   async handleConnection(socket: Socket): Promise<void> {
     try {
