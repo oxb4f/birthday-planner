@@ -11,16 +11,15 @@ prepare_env() {
 validate_env() {
     for env in "${ENVS[@]}"; do
         if [ "$env" = "$RUNNING_ENV" ]; then
-            return 1
+            return 0
         fi
     done
 
-    return 0
+    return 1
 }
 
 if [ $# -eq 0 ]; then
-    echo -n "Env: "
-    read -r RUNNING_ENV
+    read -rp "Env: " RUNNING_ENV
 elif [ $# -ge 1 ]; then
     RUNNING_ENV="$1"
 fi
@@ -30,9 +29,12 @@ export RUNNING_ENV
 validate_env
 
 case "$?" in
-"1")
+"0")
     echo "Running env: ${RUNNING_ENV}"
     prepare_env
     ;;
-*) echo "invalid env value :( please, consider using dev, production or staging" ;;
+*)
+    echo "invalid env value :( please, consider using dev, production or staging"
+    exit
+    ;;
 esac
