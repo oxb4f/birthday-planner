@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
@@ -14,7 +15,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { GetUserFromRequest } from "../../user/decorators";
 import { User } from "../../user/entities";
-import { CreateRoomDto } from "../dto";
+import { CreateRoomDto, SearchRoomDto } from "../dto";
 import { RoomRo } from "../interfaces";
 import { RoomService } from "../services";
 
@@ -49,5 +50,25 @@ export class RoomController {
     const room = await this._roomService.getRoom(this._em, { id: roomId });
 
     return { room: await this._roomService.buildRoomRo(this._em, room) };
+  }
+
+  @ApiBearerAuth()
+  @Get("/rooms")
+  @UseGuards(AuthGuard())
+  public async getRooms(
+    @GetUserFromRequest() user: User,
+    @Query(new ValidationPipe()) searchRoomDto: SearchRoomDto,
+  ): Promise<Array<RoomRo>> {
+    const rooms = await this._roomService.getRooms(
+      this._em,
+      { owner: user.id },
+      [],
+      searchRoomDto.offset,
+      searchRoomDto.limit,
+    );
+
+    return Promise.all(
+      rooms.map((room) => this._roomService.buildRoomRo(this._em, room)),
+    );
   }
 }
