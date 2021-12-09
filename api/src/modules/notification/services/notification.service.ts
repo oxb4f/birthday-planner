@@ -113,23 +113,29 @@ export class NotificationService {
       .leftJoinAndSelect("user", "u")
       .where({ to: userId })
       .andWhere({
-        $and: [
-          { "fr.id": { $ne: null } },
+        $or: [
+          { "n.type": NotificationType.FRIEND_BIRTHDAY_NOTIFICATION },
           {
-            $or: [
+            $and: [
+              { "fr.id": { $ne: null } },
               {
-                "n.type": NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
-                "fr.status": FriendRequestStatus.PENDING,
-              },
-              {
-                "n.type":
-                  NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
-                "fr.status": {
-                  $in: [
-                    FriendRequestStatus.ACCEPTED,
-                    FriendRequestStatus.REJECTED,
-                  ],
-                },
+                $or: [
+                  {
+                    "n.type":
+                      NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
+                    "fr.status": FriendRequestStatus.PENDING,
+                  },
+                  {
+                    "n.type":
+                      NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
+                    "fr.status": {
+                      $in: [
+                        FriendRequestStatus.ACCEPTED,
+                        FriendRequestStatus.REJECTED,
+                      ],
+                    },
+                  },
+                ],
               },
             ],
           },

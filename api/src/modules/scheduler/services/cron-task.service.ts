@@ -23,7 +23,7 @@ export class CronTasksService {
     protected readonly _friendsBirthdayProcessingQueue: Queue,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   public async processFriendsBirthday(): Promise<void> {
     this._logger.debug("Cron: started processFriendsBirthday task");
 

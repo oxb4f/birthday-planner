@@ -82,7 +82,10 @@ export class FriendsBirthdayProcessor {
   }
 
   @OnQueueFailed()
-  private async onFailed(job: Job<FriendsBirthdayProcessorPayload>, error: Error) {
-    this._logger.error(error.message, error.stack)
+  private async onFailed(
+    job: Job<FriendsBirthdayProcessorPayload>,
+    error: Error,
+  ) {
+    this._logger.error(error.message, error.stack);
   }
 }
