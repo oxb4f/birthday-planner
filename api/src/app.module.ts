@@ -2,7 +2,12 @@ import { Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule, Params as PinoOptions } from "nestjs-pino";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { AwsSdkModule } from "nest-aws-sdk";
+import {
+  AwsSdkModule,
+  AwsServiceConfigurationOptionsFactory,
+} from "nest-aws-sdk";
+import { BullModule } from "@nestjs/bull";
+import Bull from "bull";
 
 import { SharedModule } from "./modules/shared/shared.module";
 import { UserModule } from "./modules/user/user.module";
@@ -26,11 +31,27 @@ import { RoomModule } from "./modules/room/room.module";
     RoomModule,
     ScheduleModule.forRoot(),
     MikroOrmModule.forRoot(),
+    BullModule.forRootAsync({
+      imports: [SharedModule],
+      inject: [ConfigService],
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<Bull.QueueOptions> => ({
+        redis: {
+          host: configService.get("REDIS_HOST"),
+          port: configService.getNumber("REDIS_PORT"),
+          db: configService.getNumber("REDIS_DB"),
+          password: configService.get("REDIS_PASSWORD"),
+        },
+      }),
+    }),
     AwsSdkModule.forRootAsync({
       defaultServiceOptions: {
         imports: [SharedModule],
         inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
+        useFactory: (
+          configService: ConfigService,
+        ): AwsServiceConfigurationOptionsFactory => ({
           credentials: {
             accessKeyId: configService.get("MINIO_ACCESS_KEY"),
             secretAccessKey: configService.get("MINIO_SECRET_KEY"),

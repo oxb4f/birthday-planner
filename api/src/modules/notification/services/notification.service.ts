@@ -13,6 +13,7 @@ import { PaginationDto } from "../../shared/dto";
 import {
   ChangedFriendRequestStatusNotificationRo,
   FriendBirthdayNotificationRo,
+  FriendBirthdayNotificationRoOptions,
   IncomingFriendRequestNotificationRo,
   NotificationRo,
 } from "../interfaces";
@@ -20,6 +21,7 @@ import { FriendService, UserService } from "../../user/services";
 import { NotificationType } from "../constants/enums";
 import { NotificationEventsGateway } from "../events";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
+import { Mutable } from "../../shared/types";
 
 @Injectable()
 export class NotificationService {
@@ -111,23 +113,29 @@ export class NotificationService {
       .leftJoinAndSelect("user", "u")
       .where({ to: userId })
       .andWhere({
-        $and: [
-          { "fr.id": { $ne: null } },
+        $or: [
+          { "n.type": NotificationType.FRIEND_BIRTHDAY_NOTIFICATION },
           {
-            $or: [
+            $and: [
+              { "fr.id": { $ne: null } },
               {
-                "n.type": NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
-                "fr.status": FriendRequestStatus.PENDING,
-              },
-              {
-                "n.type":
-                  NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
-                "fr.status": {
-                  $in: [
-                    FriendRequestStatus.ACCEPTED,
-                    FriendRequestStatus.REJECTED,
-                  ],
-                },
+                $or: [
+                  {
+                    "n.type":
+                      NotificationType.INCOMING_FRIEND_REQUEST_NOTIFICATION,
+                    "fr.status": FriendRequestStatus.PENDING,
+                  },
+                  {
+                    "n.type":
+                      NotificationType.CHANGED_FRIEND_REQUEST_STATUS_NOTIFICATION,
+                    "fr.status": {
+                      $in: [
+                        FriendRequestStatus.ACCEPTED,
+                        FriendRequestStatus.REJECTED,
+                      ],
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -202,16 +210,24 @@ export class NotificationService {
   public async buildFriendBirthdayNotificationRo(
     em: EntityManager,
     friendBirthdayNotification: FriendBirthdayNotification,
+    friendBirthdayNotificationRoOptions?: FriendBirthdayNotificationRoOptions,
   ): Promise<FriendBirthdayNotificationRo> {
     await em.populate(friendBirthdayNotification, ["user", "to"]);
 
-    return {
+    const friendBirthdayNotificationRo = {
       ...(await this.buildNotificationRo(em, friendBirthdayNotification)),
 
       user: await this._userService.buildUserRo(
         em,
         friendBirthdayNotification.user,
       ),
-    } as FriendBirthdayNotificationRo;
+    } as Mutable<FriendBirthdayNotificationRo>;
+
+    if (friendBirthdayNotificationRoOptions?.howMuchIsLeft) {
+      friendBirthdayNotificationRo.howMuchIsLeft =
+        friendBirthdayNotificationRoOptions.howMuchIsLeft;
+    }
+
+    return friendBirthdayNotificationRo;
   }
 }
