@@ -1,6 +1,8 @@
 FROM node:lts-alpine
 
-ENV PROJECT_PATH=/opt/api/
+ARG PROJECT_PATH=/opt/api/
+
+ENV PROJECT_PATH=${PROJECT_PATH}
 
 ARG NODE_ENV
 
@@ -11,15 +13,20 @@ RUN apk add --update \
     bash \
     && rm -rf /var/cache/apk/*
 
+RUN npm install -g npm
+
 RUN mkdir $PROJECT_PATH
 WORKDIR $PROJECT_PATH
 
 COPY ./*.js $PROJECT_PATH
 COPY ./*.json $PROJECT_PATH
 COPY ./env/.env $PROJECT_PATH
-COPY ./test $PROJECT_PATH/test
 COPY ./src $PROJECT_PATH/src
 
 RUN if [ "$NODE_ENV" != "dev" ]; then \
     npm ci ; \
+ fi
+
+RUN if [ "$NODE_ENV" = "production" ]; then \
+    npx nest build ; \
  fi
