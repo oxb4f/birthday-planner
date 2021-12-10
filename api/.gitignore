@@ -6,4 +6,5 @@ mounted_volumes
 # env files
 test.js.html
 env/local/.env
+env/production/.env
 env/.env

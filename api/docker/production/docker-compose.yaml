@@ -2,35 +2,35 @@ version: "3.4"
 
 services:
   storage:
-      command: server /data
-      image: minio/minio
-      ports:
-        - "127.0.0.1:9000:9000"
-      restart: always
-      networks:
-        - internal
-        - public
-      environment:
-        - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-        - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      volumes:
-        - ../../mounted_volumes/minio:/data:rw,delegated
-      logging:
-        driver: "json-file"
-        options:
-          max-file: "10"
-          max-size: "1m"
+    command: server /data
+    image: minio/minio
+    ports:
+      - "127.0.0.1:9000:9000"
+    restart: always
+    networks:
+      - internal
+      - public
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - ../../mounted_volumes/minio:/data:rw,delegated
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1m"
 
   nginx:
     build:
       context: ../../.
-      dockerfile: ./docker/dev/nginx/Dockerfile
+      dockerfile: ./docker/production/nginx/Dockerfile
       network: host
     ports:
       - "80:80"
     restart: always
     networks:
-        - internal
+      - internal
     logging:
       driver: "json-file"
       options:
@@ -40,7 +40,7 @@ services:
   redis:
     build:
       context: ../../.
-      dockerfile: ./docker/dev/redis/Dockerfile
+      dockerfile: ./docker/production/redis/Dockerfile
       network: host
     command: >
       --requirepass "${REDIS_PASSWORD}"
@@ -71,14 +71,9 @@ services:
       args:
         NODE_ENV: ${NODE_ENV}
     command: [
-        "npm", "run", "start:debug"
+        "npm", "run", "start:prod"
     ]
     restart: always
-    volumes:
-      - ../../.:/opt/api/:rw,cached
-      - ../../src/migrations:/opt/api/src/migrations:rw,delegated
-      - ../../dist:/opt/api/dist:rw,delegated
-      - ../../temp:/opt/api/temp:rw,delegated
     networks:
       - internal
       - public
