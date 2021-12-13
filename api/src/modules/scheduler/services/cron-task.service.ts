@@ -11,13 +11,13 @@ import { BullQueue, MqMessage } from "../../mq/constants/enum";
 import { FriendsBirthdayProcessorPayload } from "../../mq/interfaces";
 
 @Injectable()
-export class CronTasksService {
+export class CronTaskService {
   private _usersOffset = 0;
   private _usersLimit = 10;
 
   constructor(
     protected readonly _em: EntityManager,
-    @InjectPinoLogger(CronTasksService.name)
+    @InjectPinoLogger(CronTaskService.name)
     protected readonly _logger: PinoLogger,
     @InjectQueue(BullQueue.FRIENDS_BIRTHDAY_PROCESSING_QUEUE)
     protected readonly _friendsBirthdayProcessingQueue: Queue,
