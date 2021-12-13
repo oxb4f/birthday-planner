@@ -11,7 +11,8 @@ export class ConfigService {
   constructor() {
     this._nodeEnv = process.env["NODE_ENV"] ?? "dev";
 
-    const envPath = this._nodeEnv === "dev" ? "env/.env" : ".env";
+    const envPath =
+      this._nodeEnv === "dev" || this._nodeEnv === "test" ? "env/.env" : ".env";
 
     this._envConfig = parseEnvFile(readFileSync(join(process.cwd(), envPath)));
   }
