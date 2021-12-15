@@ -25,8 +25,8 @@ export class Room extends BaseEntity {
   @OneToMany(() => RoomParticipant, (roomParticipant) => roomParticipant.room)
   public readonly participants = new Collection<RoomParticipant>(this);
 
-  @OneToOne()
-  public readonly invite!: RoomInvite;
+  @OneToOne({ nullable: true })
+  public readonly invite: RoomInvite | null = null;
 
   constructor(title: string, owner: User) {
     super();

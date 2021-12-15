@@ -8,11 +8,16 @@ import { UserService } from "../../user/services";
 import { CreateRoomDto } from "../dto";
 import { Room } from "../entities";
 import { RoomRo } from "../interfaces";
+import { RoomParticipantService } from "./room-participant.service";
+import { RoomInviteService } from "./room-invite.service";
+import { Mutable } from "../../shared/types";
 
 @Injectable()
 export class RoomService {
   constructor(
     protected readonly _userService: UserService,
+    protected readonly _roomParticipantService: RoomParticipantService,
+    protected readonly _roomInviteService: RoomInviteService,
     @InjectPinoLogger(RoomService.name) protected readonly _logger: PinoLogger,
   ) {}
 
@@ -22,6 +27,11 @@ export class RoomService {
     user: User,
   ): Promise<Room> {
     const room = new Room(createRoomDto.title, user);
+
+    (room as Mutable<Room>).invite =
+      await this._roomInviteService.createRoomInvite(em, room);
+
+    await this._roomParticipantService.createRoomParticipant(em, user, room);
 
     em.persist(room);
 

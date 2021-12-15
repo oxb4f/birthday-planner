@@ -20,6 +20,6 @@ export class RoomInvite extends BaseEntity {
   }
 
   public static generateToken(): string {
-    return nanoid(20);
+    return nanoid(40);
   }
 }
