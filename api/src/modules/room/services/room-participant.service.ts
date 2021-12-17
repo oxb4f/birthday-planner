@@ -34,6 +34,16 @@ export class RoomParticipantService {
     return roomParticipant;
   }
 
+  public async isUserRoomParticipant(
+    em: EntityManager,
+    userId: number,
+    roomId: number,
+  ): Promise<boolean> {
+    return (
+      (await em.count(RoomParticipant, { user: userId, room: roomId })) > 0
+    );
+  }
+
   public async buildRoomParticipantRo(
     em: EntityManager,
     roomParticipant: RoomParticipant,

@@ -45,9 +45,13 @@ export class RoomController {
   @Get("/room/:roomId")
   @UseGuards(AuthGuard())
   public async getRoomById(
+    @GetUserFromRequest() user: User,
     @Param("roomId", ParseIntPipe) roomId: number,
   ): Promise<{ room: RoomRo }> {
-    const room = await this._roomService.getRoom(this._em, { id: roomId });
+    const room = await this._roomService.getRoom(this._em, {
+      id: roomId,
+      userId: user.id,
+    });
 
     return { room: await this._roomService.buildRoomRo(this._em, room) };
   }
@@ -61,7 +65,7 @@ export class RoomController {
   ): Promise<Array<RoomRo>> {
     const rooms = await this._roomService.getRooms(
       this._em,
-      { owner: user.id },
+      { userId: user.id },
       [],
       searchRoomDto.offset,
       searchRoomDto.limit,

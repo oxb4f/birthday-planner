@@ -1,6 +1,6 @@
 import { FilterQuery } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
 import { User } from "../../user/entities";
@@ -11,6 +11,7 @@ import { RoomRo } from "../interfaces";
 import { RoomParticipantService } from "./room-participant.service";
 import { RoomInviteService } from "./room-invite.service";
 import { Mutable } from "../../shared/types";
+import { excludeKeys } from "../../shared/helpers";
 
 @Injectable()
 export class RoomService {
@@ -40,31 +41,55 @@ export class RoomService {
 
   public async getRoom(
     em: EntityManager,
-    filter: FilterQuery<Room>,
+    filter: FilterQuery<Room> & { id: number; userId: number },
     populate: Array<string> = [],
   ): Promise<Room> {
-    const defaultPopulate = ["owner"];
+    const isUserRoomParticipant =
+      await this._roomParticipantService.isUserRoomParticipant(
+        em,
+        filter.userId,
+        filter.id,
+      );
+    if (isUserRoomParticipant) {
+      const defaultPopulate = ["owner"];
 
-    return em.findOneOrFail(Room, filter, [...defaultPopulate, ...populate]);
+      return em.findOneOrFail(
+        Room,
+        excludeKeys(["userId"], filter) as Required<FilterQuery<Room>>,
+        [...defaultPopulate, ...populate],
+      );
+    }
+
+    throw new HttpException(
+      "Room is not accessible for this user",
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
   public async getRooms(
     em: EntityManager,
-    filter: FilterQuery<Room>,
+    filter: FilterQuery<Room> & { userId: number },
     populate: Array<string> = [],
     offset = 0,
     limit = 15,
   ): Promise<Array<Room>> {
-    const defaultPopulate = ["owner"];
+    const roomQuery = em
+      .createQueryBuilder(Room, "r")
+      .select("r.*")
+      .leftJoinAndSelect("participants", "rp", { "rp.user_id": filter.userId })
+      .leftJoinAndSelect("owner", "ro")
+      .where(excludeKeys(["userId"], filter))
+      .andWhere({ "rp.id": { $ne: null } })
+      .offset(offset)
+      .limit(limit);
 
-    return em.find(
-      Room,
-      filter,
-      [...defaultPopulate, ...populate],
-      { createdAt: "DESC" },
-      limit,
-      offset,
-    );
+    const queryResult = await roomQuery.getResult();
+
+    if (populate.length > 0) {
+      return em.populate(queryResult, populate);
+    }
+
+    return queryResult;
   }
 
   public async buildRoomRo(em: EntityManager, room: Room): Promise<RoomRo> {
