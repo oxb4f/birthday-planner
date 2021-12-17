@@ -4,7 +4,7 @@ import { INestApplication } from "@nestjs/common";
 
 import { AppModule } from "../src/app.module";
 
-describe("AppController (e2e)", () => {
+describe("App (e2e)", () => {
   let app: INestApplication;
 
   beforeEach(async () => {

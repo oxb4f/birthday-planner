@@ -22,7 +22,7 @@ import { AuthController } from "../src/modules/auth/controllers";
 import { AuthService } from "../src/modules/auth/services";
 import { JwtPayload, JwtTokens } from "../src/modules/auth/interfaces";
 
-describe("User", () => {
+describe("User (e2e)", () => {
   let app: INestApplication;
 
   const users = [
