@@ -9,7 +9,7 @@ export class RoomInvite extends BaseEntity {
   @Property()
   public readonly token!: string;
 
-  @OneToOne()
+  @OneToOne({ onDelete: "cascade" })
   public readonly room!: Room;
 
   constructor(room: Room) {
