@@ -16,6 +16,9 @@ import { RoomInviteService } from "../services";
 import { GetUserFromRequest } from "../../user/decorators";
 import { User } from "../../user/entities";
 import { ConfigService } from "../../shared/services";
+import { Roles } from "../decorators";
+import { Role } from "../constants/enum";
+import { RolesGuard } from "../guards";
 
 @ApiTags("room-invite")
 @Controller()
@@ -43,7 +46,8 @@ export class RoomInviteController {
 
   @ApiBearerAuth()
   @Get("/room-invite")
-  @UseGuards(AuthGuard())
+  @Roles(Role.PARTICIPANT)
+  @UseGuards(AuthGuard(), RolesGuard)
   public async getRoomInvite(
     @Query("roomId", ParseIntPipe) roomId: number,
   ): Promise<{ url: string }> {

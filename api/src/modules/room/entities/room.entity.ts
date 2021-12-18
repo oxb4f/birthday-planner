@@ -19,8 +19,8 @@ export class Room extends BaseEntity {
   public readonly title!: string;
 
   @Index({ name: "room_user_id_index" })
-  @ManyToOne()
-  public readonly owner!: User;
+  @ManyToOne({ nullable: true })
+  public readonly owner!: User | null;
 
   @OneToMany(() => RoomParticipant, (roomParticipant) => roomParticipant.room)
   public readonly participants = new Collection<RoomParticipant>(this);

@@ -25,9 +25,11 @@ export class RoomParticipantService {
     user: User,
     room: Room,
   ): Promise<RoomParticipant> {
-    const role = user.id === room.owner.id ? Role.OWNER : Role.PARTICIPANT;
+    const roomParticipant = new RoomParticipant(user, room);
 
-    const roomParticipant = new RoomParticipant(user, room, role);
+    if (user.id === room.owner?.id) {
+      roomParticipant.roles.push(Role.OWNER);
+    }
 
     em.persist(roomParticipant);
 
@@ -59,7 +61,7 @@ export class RoomParticipantService {
 
     const roomParticipantRo = {
       roomParticipantId: roomParticipant.id,
-      role: roomParticipant.role,
+      roles: roomParticipant.roles,
       user: await this._userService.buildUserRo(em, roomParticipant.user),
     } as Mutable<RoomParticipantRo>;
 

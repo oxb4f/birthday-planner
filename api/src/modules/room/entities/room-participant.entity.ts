@@ -7,20 +7,19 @@ import { Role } from "../constants/enum";
 
 @Entity()
 export class RoomParticipant extends BaseEntity {
-  @Enum(() => Role)
-  public readonly role!: Role;
+  @Enum({ items: () => Role, array: true, default: [Role.PARTICIPANT] })
+  public readonly roles: Array<Role> = [Role.PARTICIPANT];
 
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly user!: User;
 
-  @ManyToOne()
+  @ManyToOne({ onDelete: "cascade" })
   public readonly room!: Room;
 
-  constructor(user: User, room: Room, role = Role.PARTICIPANT) {
+  constructor(user: User, room: Room) {
     super();
 
     this.user = user;
     this.room = room;
-    this.role = role;
   }
 }

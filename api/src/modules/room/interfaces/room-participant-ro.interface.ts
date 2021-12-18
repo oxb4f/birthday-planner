@@ -8,7 +8,7 @@ export interface RoomParticipantRoOptions {
 
 export interface RoomParticipantRo {
   readonly roomParticipantId: number;
-  readonly role: Role;
+  readonly roles: Array<Role>;
   readonly user: UserRo;
   readonly room?: RoomRo;
 }
