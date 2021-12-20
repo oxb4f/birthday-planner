@@ -6,10 +6,11 @@ import { join } from "path";
 @Injectable()
 export class ConfigService {
   private readonly _envConfig: Record<string, string>;
+
   private readonly _nodeEnv: string;
 
   constructor() {
-    this._nodeEnv = process.env["NODE_ENV"] ?? "dev";
+    this._nodeEnv = process.env.NODE_ENV ?? "dev";
 
     const envPath =
       this._nodeEnv === "dev" || this._nodeEnv === "test" ? "env/.env" : ".env";

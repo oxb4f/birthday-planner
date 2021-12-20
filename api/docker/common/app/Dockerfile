@@ -18,7 +18,6 @@ RUN npm install -g npm
 RUN mkdir $PROJECT_PATH
 WORKDIR $PROJECT_PATH
 
-COPY ./*.js $PROJECT_PATH
 COPY ./*.json $PROJECT_PATH
 COPY ./env/.env $PROJECT_PATH
 COPY ./src $PROJECT_PATH/src

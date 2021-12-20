@@ -6,8 +6,8 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 
-import { ConfigService } from "../services";
 import * as ErrorStackParser from "error-stack-parser";
+import { ConfigService } from "../services";
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {

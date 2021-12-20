@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
+import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { FriendRequest, User } from "../../user/entities";
 import {
   ChangedFriendRequestStatusNotification,
@@ -20,7 +21,6 @@ import {
 import { FriendService, UserService } from "../../user/services";
 import { NotificationType } from "../constants/enums";
 import { NotificationEventsGateway } from "../events";
-import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { Mutable } from "../../shared/types";
 
 @Injectable()

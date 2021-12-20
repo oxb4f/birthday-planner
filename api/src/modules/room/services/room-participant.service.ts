@@ -65,7 +65,7 @@ export class RoomParticipantService {
       user: await this._userService.buildUserRo(em, roomParticipant.user),
     } as Mutable<RoomParticipantRo>;
 
-    roomParticipantRo.room = !!roomParticipantRoOptions?.showRoom
+    roomParticipantRo.room = roomParticipantRoOptions?.showRoom
       ? await this._roomService.buildRoomRo(em, roomParticipant.room)
       : undefined;
 

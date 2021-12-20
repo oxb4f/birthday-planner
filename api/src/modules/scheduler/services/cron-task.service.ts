@@ -13,6 +13,7 @@ import { FriendsBirthdayProcessorPayload } from "../../mq/interfaces";
 @Injectable()
 export class CronTaskService {
   private _usersOffset = 0;
+
   private _usersLimit = 10;
 
   constructor(

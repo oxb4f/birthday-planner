@@ -34,7 +34,7 @@ export abstract class FileController {
     }
 
     try {
-      await this._fileService.downloadFile(bucket, "files/" + key, res, {
+      await this._fileService.downloadFile(bucket, `files/${key}`, res, {
         mimeType,
         range: req.headers.range,
       });

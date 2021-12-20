@@ -100,7 +100,7 @@ export class UserService {
 
     const populate: Array<string> = [];
 
-    if (!!options?.numberOfWishlists) {
+    if (options?.numberOfWishlists) {
       populate.push("wishlists");
     }
 
@@ -108,7 +108,7 @@ export class UserService {
       await em.populate(user, populate);
     }
 
-    userRo.numberOfWishlists = !!options?.numberOfWishlists
+    userRo.numberOfWishlists = options?.numberOfWishlists
       ? user.wishlists.length
       : undefined;
 
