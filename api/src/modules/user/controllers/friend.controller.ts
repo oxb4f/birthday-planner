@@ -13,11 +13,10 @@ import {
 } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 
-import { FriendService } from "../services";
+import { FriendService, UserService } from "../services";
 import { FriendRequestRo, FriendRo } from "../interfaces";
 import { GetUserFromRequest } from "../decorators";
 import { User } from "../entities";
-import { UserService } from "../services";
 import { ChangeFriendRequestStatusDto } from "../dto";
 
 @ApiTags("user")

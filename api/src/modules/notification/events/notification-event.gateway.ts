@@ -34,7 +34,7 @@ export class NotificationEventsGateway
   async handleConnection(socket: Socket): Promise<void> {
     try {
       const jwtToken: string | undefined =
-        socket.handshake.headers["authorization"]?.split(" ")[1];
+        socket.handshake.headers.authorization?.split(" ")[1];
 
       const jwtPayload: JwtPayload = jwt.verify(
         jwtToken as string,

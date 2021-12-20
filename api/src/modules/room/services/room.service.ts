@@ -2,6 +2,7 @@ import { FilterQuery } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
+import { wrap } from "mikro-orm";
 
 import { User } from "../../user/entities";
 import { UserService } from "../../user/services";
@@ -12,7 +13,6 @@ import { RoomParticipantService } from "./room-participant.service";
 import { RoomInviteService } from "./room-invite.service";
 import { Mutable } from "../../shared/types";
 import { excludeKeys } from "../../shared/helpers";
-import { wrap } from "mikro-orm";
 
 @Injectable()
 export class RoomService {

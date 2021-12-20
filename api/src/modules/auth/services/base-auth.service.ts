@@ -18,6 +18,7 @@ export abstract class BaseAuthService {
   ) {}
 
   abstract signUp(...args: unknown[]): Promise<User>;
+
   abstract signIn(...args: unknown[]): Promise<User>;
 
   public async generateRefreshToken(

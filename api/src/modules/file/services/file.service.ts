@@ -45,10 +45,9 @@ export abstract class FileService {
   ): Promise<string[]> {
     return Promise.all(
       files.map(async (file) => {
-        const key =
-          "files/" +
-          randomBytes(16).toString("hex") +
-          `.${extension(file.mimetype)}`;
+        const key = `files/${randomBytes(16).toString("hex")}.${extension(
+          file.mimetype,
+        )}`;
         const endpoint = `${bucket}/${key}`;
 
         this._s3

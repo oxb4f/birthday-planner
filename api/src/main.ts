@@ -2,14 +2,14 @@ import { NestFactory } from "@nestjs/core";
 import * as helmet from "helmet";
 import * as compression from "compression";
 
+import { Logger } from "nestjs-pino";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { INestApplication } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import { SharedModule } from "./modules/shared/shared.module";
 import { ConfigService } from "./modules/shared/services";
-import { Logger } from "nestjs-pino";
 import { ExceptionsFilter } from "./modules/shared/filters";
 import { ResponseInterceptor } from "./modules/shared/interceptors";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { INestApplication } from "@nestjs/common";
 
 const globalPrefix = "api";
 

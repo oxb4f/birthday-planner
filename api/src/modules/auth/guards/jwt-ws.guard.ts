@@ -20,7 +20,7 @@ export class WsJwtGuard implements CanActivate {
 
     try {
       const jwtToken: string =
-        client.handshake.headers["authorization"].split(" ")[1];
+        client.handshake.headers.authorization.split(" ")[1];
 
       const jwtPayload: JwtPayload = jwt.verify(
         jwtToken,

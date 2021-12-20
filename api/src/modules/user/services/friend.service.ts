@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
+import { FilterQuery } from "@mikro-orm/core";
 
 import { Friend, FriendRequest, User } from "../entities";
 import {
@@ -19,7 +20,6 @@ import { UserService } from "./user.service";
 import { Mutable } from "../../shared/types";
 import { FriendRequestStatus } from "../constants/enums";
 import { NotificationService } from "../../notification/services";
-import { FilterQuery } from "@mikro-orm/core";
 
 @Injectable()
 export class FriendService {
@@ -154,7 +154,7 @@ export class FriendService {
   ): Promise<FriendRo> {
     const populate: Array<string> = ["user"];
 
-    if (!!friendRoOptions?.showWhoseFriend) {
+    if (friendRoOptions?.showWhoseFriend) {
       populate.push("to");
     }
 
@@ -164,7 +164,7 @@ export class FriendService {
       user: await this._userService.buildUserRo(em, friend.user),
     } as Mutable<FriendRo>;
 
-    friendRo.to = !!friendRoOptions?.showWhoseFriend
+    friendRo.to = friendRoOptions?.showWhoseFriend
       ? await this._userService.buildUserRo(em, friend.to)
       : undefined;
 
@@ -178,7 +178,7 @@ export class FriendService {
   ): Promise<FriendRequestRo> {
     const populate: Array<string> = ["from"];
 
-    if (!!friendRequestRoOptions?.showFriendRequestWasSentTo) {
+    if (friendRequestRoOptions?.showFriendRequestWasSentTo) {
       populate.push("to");
     }
 
@@ -190,7 +190,7 @@ export class FriendService {
       status: friendRequest.status,
     } as Mutable<FriendRequestRo>;
 
-    friendRequestRo.to = !!friendRequestRoOptions?.showFriendRequestWasSentTo
+    friendRequestRo.to = friendRequestRoOptions?.showFriendRequestWasSentTo
       ? await this._userService.buildUserRo(em, friendRequest.to)
       : undefined;
 

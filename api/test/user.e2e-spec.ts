@@ -111,7 +111,7 @@ describe("User (e2e)", () => {
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
 
-          const jwtToken = req.headers["authorization"]?.split(" ")[1];
+          const jwtToken = req.headers.authorization?.split(" ")[1];
           try {
             const data: any = verify(jwtToken as string, "somejwtsecret");
 
